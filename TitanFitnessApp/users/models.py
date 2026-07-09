@@ -25,8 +25,8 @@ class CustomUser(AbstractUser):
     birth_date = models.DateField(blank=False, null=False, verbose_name='Birth Date')
     height = models.IntegerField(blank=False, null=False, verbose_name='Height')
     gender = models.CharField(blank=False, null=False, max_length=30, choices=GENDER_CHOICES)
-    current_weight = models.IntegerField(blank=False, null=False, verbose_name='Weight')
-    target_weight = models.IntegerField(blank=False, null=False, verbose_name='Weight')
+    current_weight = models.IntegerField(blank=False, null=False, verbose_name='Current Weight')
+    target_weight = models.IntegerField(blank=False, null=False, verbose_name='Target Weight')
     fitness_goal = models.IntegerField(blank=False, null=False, choices=GOAL_CHOICES, verbose_name='Fitness Goal')
     activity_level = models.FloatField(blank=False, null=False, choices=ACTIVITY_CHOICES, verbose_name='Activity Level')
 

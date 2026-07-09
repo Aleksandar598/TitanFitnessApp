@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <title>Titan - Registration</title>
+    <style>
+        .errorlist {
+            color: #d9534f;
+            list-style-type: none;
+            padding: 0;
+            margin: 5px 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Create a profile in Titan </h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Register</button>
+    </form>
+    <p>Already registered? <a href=""> Login here!</a>.</p>
+</body>
+</html>
