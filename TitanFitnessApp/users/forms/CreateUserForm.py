@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
-from .models import CustomUser
-from .validators import validate_fitness_goal, validate_minimum_weight, validate_maximum_weight, validate_birth_date,  validate_realistic_height
+from users.models import CustomUser
+from users.validators import validate_fitness_goal, validate_minimum_weight, validate_maximum_weight, validate_birth_date,  validate_realistic_height
 
 
 class CreateUserForm(UserCreationForm):
@@ -46,3 +46,4 @@ class CreateUserForm(UserCreationForm):
         target_weight = cleaned_data.get('target_weight')
         validate_fitness_goal(fitness_goal, current_weight, target_weight)
         return cleaned_data
+

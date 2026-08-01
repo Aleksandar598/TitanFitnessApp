@@ -5,6 +5,7 @@
       <set>
         <option value="$PROJECT_DIR$/TitanFitnessApp" />
         <option value="$PROJECT_DIR$" />
+        <option value="$PROJECT_DIR$/TitanFitnessApp/users" />
       </set>
     </option>
   </component>

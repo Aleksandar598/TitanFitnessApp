@@ -1,10 +1,17 @@
+from django.contrib import messages
 from django.contrib.auth import login
 from django.shortcuts import render, redirect
 
-from users.forms import CreateUserForm
+from users.forms.LoginUserForm import LoginUserForm
+from users.forms.CreateUserForm import CreateUserForm
 
 
 # Create your views here.
+def unregistered_menu_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    else:
+        return render(request, 'users/unregistered_menu.html')
 
 def register_view(request):
     if request.method == 'POST':
@@ -17,4 +24,21 @@ def register_view(request):
         form = CreateUserForm()
 
     return render(request, 'users/register.html', {'form': form})
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        form = LoginUserForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, 'You are now logged in')
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'Invalid Credentials')
+    else:
+        form = LoginUserForm()
+    return render(request, 'users/login.html', {'form': form})
 
