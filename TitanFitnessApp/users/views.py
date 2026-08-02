@@ -42,3 +42,5 @@ def login_view(request):
         form = LoginUserForm()
     return render(request, 'users/login.html', {'form': form})
 
+def dashboard_view(request):
+    return render(request, 'users/dashboard.html')
