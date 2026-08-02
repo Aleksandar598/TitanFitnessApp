@@ -55,5 +55,8 @@ def dashboard_view(request):
 
 @login_required
 def logout_view(request):
-    logout(request)
-    return redirect('home')
+    if request.user.is_authenticated and request.method == 'POST':
+        logout(request)
+        return redirect('home')
+    else :
+        return render(request, 'users/unregistered_menu.html')
