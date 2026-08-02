@@ -28,11 +28,11 @@ def validate_fitness_goal(fitness_goal, current_weight, target_weight):
 
     if fitness_goal == 0:
         if current_weight != target_weight:
-            raise ValidationError("Fitness goal must be equal to target weight")
+            raise ValidationError("Fitness goal must correspond to weight goal")
     if fitness_goal == 250:
         if current_weight >= target_weight:
-            raise ValidationError("Fitness goal must be less than target weight")
+            raise ValidationError("Fitness goal must correspond to weight goal")
     if fitness_goal == -250:
         if current_weight <= target_weight:
-            raise ValidationError("Fitness goal must be less than target weight")
+            raise ValidationError("Fitness goal must correspond to weight goal")
     return fitness_goal

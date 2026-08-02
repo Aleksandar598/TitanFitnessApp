@@ -5,6 +5,12 @@
     <title>Dashboard</title>
 </head>
 <body>
-
+<h1>Welcome to the Dashboard, {{ username }}!</h1>
+<form action="{% url 'logout' %}" method="post" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">
+        Log Out
+    </button>
+</form>
 </body>
 </html>

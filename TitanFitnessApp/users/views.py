@@ -1,5 +1,6 @@
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from users.forms.LoginUserForm import LoginUserForm
@@ -14,6 +15,8 @@ def unregistered_menu_view(request):
         return render(request, 'users/unregistered_menu.html')
 
 def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
@@ -42,5 +45,15 @@ def login_view(request):
         form = LoginUserForm()
     return render(request, 'users/login.html', {'form': form})
 
+@login_required
 def dashboard_view(request):
-    return render(request, 'users/dashboard.html')
+    if request.method == 'POST':
+        logout(request)
+        return redirect('home')
+    context = {'username' : request.user.username}
+    return render(request, 'users/dashboard.html', context=context)
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('home')

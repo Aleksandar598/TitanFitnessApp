@@ -1,5 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
+from django.forms import DateInput
+
 from users.models import CustomUser
 from users.validators import validate_fitness_goal, validate_minimum_weight, validate_maximum_weight, validate_birth_date,  validate_realistic_height
 
@@ -9,7 +11,9 @@ class CreateUserForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = UserCreationForm.Meta.fields +('email', 'birth_date', 'height', 'gender', 'current_weight', 'target_weight', 'fitness_goal', 'activity_level')
-
+        widgets = {
+            'birth_date': DateInput(attrs={'class': 'form-control', 'type' : 'date'}, format='%Y-%m-%d'),
+        }
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if CustomUser.objects.filter(email=email).exists():
