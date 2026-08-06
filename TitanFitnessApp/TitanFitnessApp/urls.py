@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+
+from nutrition.views import create_food_view, nutrition_view
 from users.views import register_view, unregistered_menu_view, login_view, dashboard_view, logout_view
 
 urlpatterns = [
@@ -25,4 +27,6 @@ urlpatterns = [
     path('', unregistered_menu_view, name='home'),
     path('dashboard/', dashboard_view, name='dashboard'),
     path('logout/', logout_view, name='logout'),
+    path('create_food/', create_food_view, name='create_food'),
+    path('nutrition/', nutrition_view, name='nutrition'),
 ]

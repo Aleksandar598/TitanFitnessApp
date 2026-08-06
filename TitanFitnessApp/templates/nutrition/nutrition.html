@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nutrition Overview</title>
+</head>
+<body>
+
+    <h1>Nutrition & Foods</h1>
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'create_food' %}" style="text-decoration: none;">
+            <button type="button" class="btn btn-primary">
+                + Add New Food
+            </button>
+        </a>
+
+        <a href="{% url 'dashboard' %}" style="text-decoration: none; margin-left: 10px;">
+            <button type="button" class="btn btn-secondary">
+                &larr; Back to Dashboard
+            </button>
+        </a>
+    </div>
+
+    <hr>
+    <h3>Your Custom Foods</h3>
+    {% if foods %}
+        <ul>
+            {% for food in foods %}
+                <li>
+                    <strong>{{ food.name }}</strong> - {{ food.quantity }}{{ food.quantity_type }}
+                    ({{ food.calories }} kcal | P: {{ food.protein }}g, C: {{ food.carbohydrates }}g, F: {{ food.fat }}g)
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No custom foods added yet.</p>
+    {% endif %}
+    <div style="margin-top: 30px;">
+        <form action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">
+                Log Out
+            </button>
+        </form>
+    </div>
+
+</body>
+</html>
