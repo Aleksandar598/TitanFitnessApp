@@ -8,6 +8,7 @@
 <h1>Welcome to the Dashboard, {{ username }}!</h1>
 <form action="{% url 'logout' %}" method="post" style="display: inline;">
     {% csrf_token %}
+    <button type="button"> <a href="{% url 'nutrition' %}">Nutrition menu</a></button>
     <button type="submit" class="btn btn-danger">
         Log Out
     </button>
