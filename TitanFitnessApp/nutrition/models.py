@@ -36,8 +36,11 @@ class Food(models.Model):
 
     def clean(self):
         super().clean()
-        if self.calories is None:
-            self.calories = self.calculate_calories()
+        macros = (self.protein, self.carbohydrates, self.fat)
+
+        if None not in macros:
+            if self.calories is None:
+                self.calories = self.calculate_calories()
 
         total_macro_weight = (self.protein or 0) + (self.carbohydrates or 0) + (self.fat or 0)
 
