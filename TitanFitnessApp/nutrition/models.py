@@ -29,7 +29,7 @@ class Food(models.Model):
     calories = models.IntegerField(validators=[MinValueValidator(0)], null=True, blank=True)
 
     def __str__(self):
-        return f"{self.name} {self.quantity}"
+        return f" Quantity: {self.quantity} {self.quantity_type}, Protein: {self.protein}, Carbohydrates:{self.carbohydrates}, Fats {self.fat}"
 
     def calculate_calories(self):
         return round(self.protein * 4 + self.carbohydrates * 4 + self.fat * 9)

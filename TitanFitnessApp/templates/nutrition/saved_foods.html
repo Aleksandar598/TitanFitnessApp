@@ -6,7 +6,11 @@
         <ul class="food-list">
             {% for food in foods %}
                 <li class="food-item">
-                    <span class="food-name">{{ food.name }}</span>
+                    <div class="food-info">
+                        <div class="food-name"><strong>Name:</strong> {{ food.name }}</div>
+                        <div class="food-description"><strong>Description:</strong> {{ food.description }}</div>
+                        <div class="food-info"> {{ food }}</div>
+                    </div>
 
                     <form action="{% url 'remove_saved_food' food.id %}" method="POST" class="remove-form">
                         {% csrf_token %}
@@ -16,6 +20,7 @@
                             Remove
                         </button>
                     </form>
+                    <hr class="food-divider">
                 </li>
             {% endfor %}
         </ul>
