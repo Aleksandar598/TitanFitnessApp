@@ -1,0 +1,26 @@
+{% block content %}
+<div class="saved-foods-container">
+    <h2>My Saved Foods</h2>
+
+    {% if foods %}
+        <ul class="food-list">
+            {% for food in foods %}
+                <li class="food-item">
+                    <span class="food-name">{{ food.name }}</span>
+
+                    <form action="{% url 'remove_saved_food' food.id %}" method="POST" class="remove-form">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                class="btn-remove" 
+                                onclick="return confirm('Are you sure you want to remove {{ food.name }}?');">
+                            Remove
+                        </button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="empty-message">You haven't saved any foods yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

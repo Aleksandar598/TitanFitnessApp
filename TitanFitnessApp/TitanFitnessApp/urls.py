@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from nutrition import views as nutrition_views
 from nutrition.views import create_food_view, nutrition_view
 from users.views import register_view, unregistered_menu_view, login_view, dashboard_view, logout_view
 
@@ -29,4 +30,6 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('create_food/', create_food_view, name='create_food'),
     path('nutrition/', nutrition_view, name='nutrition'),
+    path("saved-foods/", nutrition_views.saved_view_foods, name="saved_foods"),
+    path("saved-foods/remove/<int:food_id>/", nutrition_views.remove_saved_food, name="remove_saved_food"),
 ]
