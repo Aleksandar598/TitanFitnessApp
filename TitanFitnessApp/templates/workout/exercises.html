@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Titan - Exercises</title>
+</head>
+<body>
+    <h1>Exercises</h1>
+    <p><a href="{% url 'create_personal_exercise' %}">Create personal exercise</a></p>
+
+    <h2>Available exercises</h2>
+    {% if available_exercises %}
+        <ul>
+            {% for exercise in available_exercises %}
+                <li>
+                    {{ exercise.name }}{% if exercise.muscle_group %} — {{ exercise.muscle_group }}{% endif %}
+                    {% if not exercise.is_catalog_exercise %}(personal){% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No exercises are available yet. Create a personal exercise to get started.</p>
+    {% endif %}
+</body>
+</html>

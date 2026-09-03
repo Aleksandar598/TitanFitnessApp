@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Titan - Create Exercise</title>
+</head>
+<body>
+    <h1>Create Personal Exercise</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create exercise</button>
+    </form>
+    <p><a href="{% url 'exercise_list' %}">Back to exercises</a></p>
+</body>
+</html>
