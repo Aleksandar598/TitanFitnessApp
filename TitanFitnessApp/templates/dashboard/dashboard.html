@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+<h1>Welcome to the Dashboard, {{ username }}!</h1>
+<form action="{% url 'logout' %}" method="post" style="display: inline;">
+    {% csrf_token %}
+    <a href="{% url 'nutrition' %}">Nutrition menu</a>
+    <button type="submit" class="btn btn-danger">
+        Log Out
+    </button>
+</form>
+</body>
+</html>
