@@ -45,3 +45,21 @@ class FoodLogListViewsTest(TestCase):
 
         self.assertEqual(response.context['selected_date'], selected_date)
         self.assertContains(response, 'Eggs')
+
+    def test_user_can_remove_own_food_log_from_today(self):
+        log = FoodLog.objects.create(user=self.user, food=self.food, quantity=100, date=timezone.localdate())
+        self.client.login(username=self.user.username, password='password123')
+
+        response = self.client.post(reverse('remove_today_food_log', args=[log.id]))
+
+        self.assertRedirects(response, reverse('today_food_log'))
+        self.assertFalse(FoodLog.objects.filter(id=log.id).exists())
+
+    def test_user_cannot_remove_another_users_food_log(self):
+        log = FoodLog.objects.create(user=self.other_user, food=self.food, quantity=100, date=timezone.localdate())
+        self.client.login(username=self.user.username, password='password123')
+
+        response = self.client.post(reverse('remove_today_food_log', args=[log.id]))
+
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(FoodLog.objects.filter(id=log.id).exists())

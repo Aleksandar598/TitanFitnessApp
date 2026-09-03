@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from nutrition.forms.CreateFoodForm import CreateFoodForm
 from nutrition.forms.FoodLogForm import FoodLogForm, USDAFoodLogForm
@@ -100,6 +101,19 @@ def today_food_log_view(request):
     context['title'] = "Today's food log"
     context['show_history_form'] = False
     return render(request, 'nutrition/food_log.html', context)
+
+
+@login_required
+@require_POST
+def remove_today_food_log_view(request, log_id):
+    food_log = get_object_or_404(
+        FoodLog,
+        id=log_id,
+        user=request.user,
+        date=timezone.localdate(),
+    )
+    food_log.delete()
+    return redirect('today_food_log')
 
 
 @login_required

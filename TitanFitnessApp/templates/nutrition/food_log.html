@@ -32,6 +32,9 @@
                     <th>Protein</th>
                     <th>Carbohydrates</th>
                     <th>Fat</th>
+                    {% if not show_history_form %}
+                        <th>Action</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -43,6 +46,14 @@
                         <td>{{ log.protein }} g</td>
                         <td>{{ log.carbohydrates }} g</td>
                         <td>{{ log.fat }} g</td>
+                        {% if not show_history_form %}
+                            <td>
+                                <form method="post" action="{% url 'remove_today_food_log' log.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Remove</button>
+                                </form>
+                            </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>
