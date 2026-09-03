@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Titan - Add Food to Diary</title>
+</head>
+<body>
+    <h1>Add Food to Diary</h1>
+    <p>Select one of your saved foods, enter the consumed quantity, and choose the day.</p>
+
+    {% if not has_saved_foods %}
+        <p>You do not have any saved foods yet.</p>
+        <a href="{% url 'create_food' %}">Create a food first</a>
+    {% else %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Add to diary</button>
+        </form>
+    {% endif %}
+
+    <p><a href="{% url 'nutrition' %}">Back to nutrition</a></p>
+</body>
+</html>
