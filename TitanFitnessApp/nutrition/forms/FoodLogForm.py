@@ -48,10 +48,10 @@ class USDAFoodLogForm(forms.Form):
             return cleaned_data
 
         food = self.selected_food
-        serving_size = food.get('serving_size')
-        quantity_type = (food.get('serving_size_unit') or '').lower()
-        if not serving_size or serving_size <= 0 or quantity_type not in ('g', 'ml'):
-            raise forms.ValidationError('USDA did not provide a usable serving size in grams or milliliters for this food.')
+        reference_quantity = food.get('quantity')
+        quantity_type = (food.get('quantity_type') or '').lower()
+        if not reference_quantity or reference_quantity <= 0 or quantity_type not in ('g', 'ml'):
+            raise forms.ValidationError('USDA did not provide a usable 100 g/ml reference quantity for this food.')
         if any(food.get(nutrient) is None for nutrient in ('calories', 'protein', 'carbohydrates', 'fat')):
             raise forms.ValidationError('USDA did not provide complete nutrition information for this food.')
         return cleaned_data

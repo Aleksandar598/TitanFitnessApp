@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Titan - {{ title }}</title>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+
+    {% if show_history_form %}
+        <form method="get">
+            {{ history_form.as_p }}
+            <button type="submit">View log</button>
+        </form>
+    {% endif %}
+
+    <h2>{{ selected_date }}</h2>
+    <p>
+        Calories: {{ totals.calories }} / {{ request.user.daily_calorie_goal|floatformat:0 }} kcal<br>
+        Protein: {{ totals.protein }} g ·
+        Carbohydrates: {{ totals.carbohydrates }} g ·
+        Fat: {{ totals.fat }} g
+    </p>
+
+    {% if logs %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Food</th>
+                    <th>Quantity</th>
+                    <th>Calories</th>
+                    <th>Protein</th>
+                    <th>Carbohydrates</th>
+                    <th>Fat</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                    <tr>
+                        <td>{{ log.food_name }}</td>
+                        <td>{{ log.quantity }} {{ log.get_quantity_type_display }}</td>
+                        <td>{{ log.calories }} kcal</td>
+                        <td>{{ log.protein }} g</td>
+                        <td>{{ log.carbohydrates }} g</td>
+                        <td>{{ log.fat }} g</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No food has been logged for this day.</p>
+    {% endif %}
+
+    <p>
+        <a href="{% url 'create_food_log' %}">Add food to diary</a> ·
+        <a href="{% url 'nutrition' %}">Back to nutrition</a>
+    </p>
+</body>
+</html>

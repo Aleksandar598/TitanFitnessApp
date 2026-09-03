@@ -1,8 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 
 from nutrition.forms.CreateFoodForm import CreateFoodForm
 from nutrition.forms.FoodLogForm import FoodLogForm, USDAFoodLogForm
+from nutrition.forms.FoodLogHistoryForm import FoodLogHistoryForm
 from nutrition.models import Food, FoodLog
 from nutrition.services.usda import USDAApiError, search_foods
 
@@ -57,12 +59,12 @@ def create_food_log_view(request):
 
     if request.method == 'POST' and action == 'usda' and usda_form.is_valid():
         food = usda_form.selected_food
-        multiplier = usda_form.cleaned_data['quantity'] / food['serving_size']
+        multiplier = usda_form.cleaned_data['quantity'] / food['quantity']
         FoodLog.objects.create(
             user=request.user,
             food_name=food['description'],
             quantity=usda_form.cleaned_data['quantity'],
-            quantity_type=food['serving_size_unit'].lower(),
+            quantity_type=food['quantity_type'].lower(),
             calories=round(food['calories'] * multiplier, 2),
             protein=round(food['protein'] * multiplier, 2),
             carbohydrates=round(food['carbohydrates'] * multiplier, 2),
@@ -79,6 +81,41 @@ def create_food_log_view(request):
         'search_results': search_results,
         'search_error': search_error,
     })
+
+
+def _food_log_context(user, selected_date):
+    logs = FoodLog.objects.filter(user=user, date=selected_date).order_by('created_at')
+    totals = {
+        'calories': round(sum(log.calories for log in logs), 2),
+        'protein': round(sum(log.protein for log in logs), 2),
+        'carbohydrates': round(sum(log.carbohydrates for log in logs), 2),
+        'fat': round(sum(log.fat for log in logs), 2),
+    }
+    return {'logs': logs, 'selected_date': selected_date, 'totals': totals}
+
+
+@login_required
+def today_food_log_view(request):
+    context = _food_log_context(request.user, timezone.localdate())
+    context['title'] = "Today's food log"
+    context['show_history_form'] = False
+    return render(request, 'nutrition/food_log.html', context)
+
+
+@login_required
+def food_log_history_view(request):
+    history_form = FoodLogHistoryForm(request.GET or None)
+    selected_date = timezone.localdate()
+    if history_form.is_valid():
+        selected_date = history_form.cleaned_data['date']
+
+    context = _food_log_context(request.user, selected_date)
+    context.update({
+        'title': 'Food log history',
+        'show_history_form': True,
+        'history_form': history_form,
+    })
+    return render(request, 'nutrition/food_log.html', context)
 
 
 @login_required

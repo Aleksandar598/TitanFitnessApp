@@ -7,6 +7,8 @@ from urllib.request import urlopen
 from django.conf import settings
 
 USDA_SEARCH_URL = 'https://api.nal.usda.gov/fdc/v1/foods/search'
+USDA_REFERENCE_QUANTITY = 100
+USDA_REFERENCE_UNIT = 'g'
 
 
 class USDAApiError(Exception):
@@ -41,8 +43,10 @@ def _normalise_food(food):
         'description': food.get('description', ''),
         'data_type': food.get('dataType', ''),
         'brand_owner': food.get('brandOwner', ''),
-        'serving_size': food.get('servingSize'),
-        'serving_size_unit': food.get('servingSizeUnit', ''),
+        # USDA food nutrient values are expressed per 100 g. Keep this
+        # reference explicit so all food-log calculations use the same base.
+        'quantity': USDA_REFERENCE_QUANTITY,
+        'quantity_type': USDA_REFERENCE_UNIT,
         'calories': _nutrient_value(nutrients, names=('Energy',), numbers=('208',)),
         'protein': _nutrient_value(nutrients, names=('Protein',), numbers=('203',)),
         'carbohydrates': _nutrient_value(

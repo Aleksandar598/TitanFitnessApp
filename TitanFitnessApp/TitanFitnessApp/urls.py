@@ -19,7 +19,13 @@ from django.urls import path
 
 from dashboard.views import dashboard_view
 from nutrition import views as nutrition_views
-from nutrition.views import create_food_log_view, create_food_view, nutrition_view
+from nutrition.views import (
+    create_food_log_view,
+    create_food_view,
+    food_log_history_view,
+    nutrition_view,
+    today_food_log_view,
+)
 from users.views import register_view, unregistered_menu_view, login_view, logout_view
 
 urlpatterns = [
@@ -31,6 +37,8 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('create_food/', create_food_view, name='create_food'),
     path('food-log/add/', create_food_log_view, name='create_food_log'),
+    path('food-log/today/', today_food_log_view, name='today_food_log'),
+    path('food-log/history/', food_log_history_view, name='food_log_history'),
     path('nutrition/', nutrition_view, name='nutrition'),
     path("saved-foods/", nutrition_views.saved_view_foods, name="saved_foods"),
     path("saved-foods/remove/<int:food_id>/", nutrition_views.remove_saved_food, name="remove_saved_food"),

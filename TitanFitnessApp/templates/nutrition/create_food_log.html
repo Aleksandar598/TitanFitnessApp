@@ -31,9 +31,7 @@
                         <strong>{{ food.description }}</strong>
                         {% if food.brand_owner %} — {{ food.brand_owner }}{% endif %}
                         <br>
-                        {% if food.serving_size %}
-                            USDA serving: {{ food.serving_size }} {{ food.serving_size_unit }}<br>
-                        {% endif %}
+                        Nutrition values per {{ food.quantity }} {{ food.quantity_type }}<br>
                         Calories: {{ food.calories|default_if_none:"Unknown" }} kcal ·
                         Protein: {{ food.protein|default_if_none:"Unknown" }} g ·
                         Carbohydrates: {{ food.carbohydrates|default_if_none:"Unknown" }} g ·
@@ -45,7 +43,7 @@
                             <p>
                                 <label>Consumed quantity</label>
                                 <input type="number" name="quantity" min="0.01" step="0.01" required>
-                                {{ food.serving_size_unit }}
+                                {{ food.quantity_type }}
                             </p>
                             <p>
                                 <label>Date</label>
