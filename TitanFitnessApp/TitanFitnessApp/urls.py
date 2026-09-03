@@ -43,5 +43,6 @@ urlpatterns = [
     path('food-log/history/', food_log_history_view, name='food_log_history'),
     path('nutrition/', nutrition_view, name='nutrition'),
     path("saved-foods/", nutrition_views.saved_view_foods, name="saved_foods"),
+    path("saved-foods/<int:food_id>/edit/", nutrition_views.edit_saved_food_view, name="edit_saved_food"),
     path("saved-foods/remove/<int:food_id>/", nutrition_views.remove_saved_food, name="remove_saved_food"),
 ]

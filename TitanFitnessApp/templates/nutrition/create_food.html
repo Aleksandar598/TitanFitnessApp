@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Titan - Add Food</title>
+    <title>Titan - {% if is_edit %}Edit Food{% else %}Add Food{% endif %}</title>
     <style>
         .errorlist {
             color: #d9534f;
@@ -18,12 +18,18 @@
     </style>
 </head>
 <body>
-    <h2>Add New Food item in Titan</h2>
+    <h2>{% if is_edit %}Edit Food{% else %}Add New Food Item{% endif %}</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Save Food</button>
+        <button type="submit">{% if is_edit %}Save Changes{% else %}Save Food{% endif %}</button>
     </form>
-    <p>Want to go back? <a href="{% url 'nutrition' %}">Back to menu</a>.</p>
+    <p>
+        {% if is_edit %}
+            <a href="{% url 'saved_foods' %}">Cancel</a>
+        {% else %}
+            Want to go back? <a href="{% url 'nutrition' %}">Back to menu</a>.
+        {% endif %}
+    </p>
 </body>
 </html>

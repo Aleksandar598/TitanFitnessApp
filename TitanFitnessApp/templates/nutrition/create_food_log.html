@@ -25,6 +25,8 @@
             {{ usda_form.fdc_id.errors }}
             {{ usda_form.quantity.errors }}
             {{ usda_form.date.errors }}
+            {{ usda_save_form.non_field_errors }}
+            {{ usda_save_form.fdc_id.errors }}
             <ul>
                 {% for food in search_results %}
                     <li>
@@ -50,6 +52,12 @@
                                 <input type="date" name="date" value="{{ usda_form.date.value|date:'Y-m-d' }}" required>
                             </p>
                             <button type="submit">Add USDA food to diary</button>
+                        </form>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="save_usda">
+                            <input type="hidden" name="fdc_id" value="{{ food.fdc_id }}">
+                            <button type="submit">Save to My Foods</button>
                         </form>
                     </li>
                 {% endfor %}

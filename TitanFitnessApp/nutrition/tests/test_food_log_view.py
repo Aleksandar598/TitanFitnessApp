@@ -99,3 +99,27 @@ class CreateFoodLogViewTest(TestCase):
         self.assertIsNone(log.food)
         self.assertEqual(log.food_name, 'USDA yogurt')
         self.assertEqual(log.calories, 91.5)
+
+    def test_user_can_save_a_usda_search_result_as_a_personal_food(self):
+        session = self.client.session
+        session['usda_search_results'] = [{
+            'fdc_id': 987,
+            'description': 'USDA yogurt',
+            'data_type': 'Foundation',
+            'brand_owner': '',
+            'quantity': 100,
+            'quantity_type': 'g',
+            'calories': 61,
+            'protein': 3.5,
+            'carbohydrates': 4.7,
+            'fat': 3.3,
+        }]
+        session.save()
+        self.client.login(username=self.user.username, password='password123')
+
+        response = self.client.post(self.url, {'action': 'save_usda', 'fdc_id': 987})
+
+        self.assertRedirects(response, reverse('saved_foods'))
+        saved_food = Food.objects.get(user=self.user, name='USDA yogurt')
+        self.assertEqual(saved_food.quantity, 100)
+        self.assertEqual(saved_food.calories, 61)

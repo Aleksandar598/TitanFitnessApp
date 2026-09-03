@@ -55,3 +55,28 @@ class USDAFoodLogForm(forms.Form):
         if any(food.get(nutrient) is None for nutrient in ('calories', 'protein', 'carbohydrates', 'fat')):
             raise forms.ValidationError('USDA did not provide complete nutrition information for this food.')
         return cleaned_data
+
+
+class USDASaveFoodForm(forms.Form):
+    fdc_id = forms.IntegerField(widget=forms.HiddenInput)
+
+    def __init__(self, *args, search_results, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.search_results = {str(food['fdc_id']): food for food in search_results if food.get('fdc_id') is not None}
+
+    def clean_fdc_id(self):
+        fdc_id = self.cleaned_data['fdc_id']
+        try:
+            self.selected_food = self.search_results[str(fdc_id)]
+        except KeyError:
+            raise forms.ValidationError('This USDA search result is no longer available. Search again.')
+        return fdc_id
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if hasattr(self, 'selected_food') and any(
+            self.selected_food.get(nutrient) is None
+            for nutrient in ('calories', 'protein', 'carbohydrates', 'fat')
+        ):
+            raise forms.ValidationError('USDA did not provide complete nutrition information for this food.')
+        return cleaned_data

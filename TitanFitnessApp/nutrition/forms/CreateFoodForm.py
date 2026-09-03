@@ -51,3 +51,12 @@ class CreateFoodForm(forms.ModelForm):
         if fat is None or fat < 0.0:
             raise forms.ValidationError("Fats cannot be negative")
         return fat
+
+    def save(self, commit=True):
+        food = super().save(commit=False)
+        # Calories are derived from the current macro values, including edits.
+        food.calories = None
+        food.full_clean()
+        if commit:
+            food.save()
+        return food
