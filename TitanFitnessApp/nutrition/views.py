@@ -12,14 +12,14 @@ def nutrition_view(request):
 @login_required
 def create_food_view(request):
     if request.method == 'POST':
-        food_form = CreateFoodForm(request.POST)
+        food_form = CreateFoodForm(request.POST, user=request.user)
         if food_form.is_valid():
             food = food_form.save(commit=False)
             food.user = request.user
             food.save()
             return redirect('nutrition')
     else :
-        food_form = CreateFoodForm()
+        food_form = CreateFoodForm(user=request.user)
     return render(request,'nutrition/create_food.html', {'form' : food_form})
 
 @login_required

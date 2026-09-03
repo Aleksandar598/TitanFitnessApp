@@ -46,14 +46,6 @@ def login_view(request):
     return render(request, 'users/login.html', {'form': form})
 
 @login_required
-def dashboard_view(request):
-    if request.method == 'POST':
-        logout(request)
-        return redirect('home')
-    context = {'username' : request.user.username}
-    return render(request, 'users/dashboard.html', context=context)
-
-@login_required
 def logout_view(request):
     if request.user.is_authenticated and request.method == 'POST':
         logout(request)

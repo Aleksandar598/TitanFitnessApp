@@ -17,9 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from dashboard.views import dashboard_view
 from nutrition import views as nutrition_views
 from nutrition.views import create_food_view, nutrition_view
-from users.views import register_view, unregistered_menu_view, login_view, dashboard_view, logout_view
+from users.views import register_view, unregistered_menu_view, login_view, logout_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -9,7 +9,11 @@
                     <div class="food-info">
                         <div class="food-name"><strong>Name:</strong> {{ food.name }}</div>
                         <div class="food-description"><strong>Description:</strong> {{ food.description }}</div>
-                        <div class="food-info"> {{ food }}</div>
+                        <div class="food-info">
+                            {{ food.quantity }} {{ food.get_quantity_type_display }} ·
+                            {{ food.calories }} kcal · Protein {{ food.protein }} g ·
+                            Carbohydrates {{ food.carbohydrates }} g · Fat {{ food.fat }} g
+                        </div>
                     </div>
 
                     <form action="{% url 'remove_saved_food' food.id %}" method="POST" class="remove-form">

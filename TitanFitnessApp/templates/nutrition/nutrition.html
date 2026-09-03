@@ -22,12 +22,7 @@
 
 
     <div style="margin-top: 30px;">
-        <form action="{% url 'dashboard' %}" method="post" style="display: inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">
-                Dashboard
-            </button>
-        </form>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
     </div>
     <div style="margin-top: 30px;">
         <form action="{% url 'logout' %}" method="post" style="display: inline;">

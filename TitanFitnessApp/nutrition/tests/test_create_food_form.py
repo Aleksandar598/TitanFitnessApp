@@ -32,20 +32,20 @@ class CreateFoodTest(TestCase):
         self.assertTrue(form.is_valid())
         self.assertEqual(form.cleaned_data['name'] , 'banana')
 
-    def test_protein_less_than_0(self):
+    def test_protein_can_be_zero(self):
         self.food_data['protein'] = 0
         form = CreateFoodForm(self.food_data)
-        self.assertFalse(form.is_valid())
+        self.assertTrue(form.is_valid())
 
-    def test_carbohydrates_less_than_0(self):
+    def test_carbohydrates_can_be_zero(self):
         self.food_data['carbohydrates'] = 0
         form = CreateFoodForm(self.food_data)
-        self.assertFalse(form.is_valid())
+        self.assertTrue(form.is_valid())
 
-    def test_fat_less_than_0(self):
+    def test_fat_can_be_zero(self):
         self.food_data['fat']  = 0
         form = CreateFoodForm(self.food_data)
-        self.assertFalse(form.is_valid())
+        self.assertTrue(form.is_valid())
 
     def test_quantity_less_than_0(self):
         self.food_data['quantity'] = 0
