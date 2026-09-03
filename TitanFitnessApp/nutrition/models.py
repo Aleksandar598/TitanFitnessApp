@@ -80,7 +80,6 @@ class FoodLog(models.Model):
         return f"{self.food_name} {self.quantity}{self.quantity_type} on {self.date}"
 
     def capture_food_snapshot(self):
-        """Copy the consumed portion's nutritional values from the current food."""
         if not self.food_id:
             raise ValidationError('A food is required to create a food log.')
         if self.food.quantity <= 0:
