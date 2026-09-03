@@ -2,8 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
 from nutrition.forms.CreateFoodForm import CreateFoodForm
-from nutrition.forms.FoodLogForm import FoodLogForm
+from nutrition.forms.FoodLogForm import FoodLogForm, USDAFoodLogForm
 from nutrition.models import Food, FoodLog
+from nutrition.services.usda import USDAApiError, search_foods
 
 
 @login_required
@@ -31,19 +32,52 @@ def saved_view_foods(request):
 
 @login_required
 def create_food_log_view(request):
-    if request.method == 'POST':
-        form = FoodLogForm(request.POST, user=request.user)
-        if form.is_valid():
-            food_log = form.save(commit=False)
-            food_log.user = request.user
-            food_log.save()
-            return redirect('nutrition')
-    else:
-        form = FoodLogForm(user=request.user)
+    action = request.POST.get('action', 'manual') if request.method == 'POST' else None
+    search_query = request.GET.get('q', '').strip()
+    search_results = request.session.get('usda_search_results', [])
+    search_error = None
+    if search_query:
+        try:
+            search_results = search_foods(search_query)
+            request.session['usda_search_results'] = search_results
+        except (USDAApiError, ValueError) as error:
+            search_error = str(error)
+
+    manual_form = FoodLogForm(request.POST if request.method == 'POST' and action == 'manual' else None, user=request.user)
+    usda_form = USDAFoodLogForm(
+        request.POST if request.method == 'POST' and action == 'usda' else None,
+        search_results=search_results,
+    )
+
+    if request.method == 'POST' and action == 'manual' and manual_form.is_valid():
+        food_log = manual_form.save(commit=False)
+        food_log.user = request.user
+        food_log.save()
+        return redirect('nutrition')
+
+    if request.method == 'POST' and action == 'usda' and usda_form.is_valid():
+        food = usda_form.selected_food
+        multiplier = usda_form.cleaned_data['quantity'] / food['serving_size']
+        FoodLog.objects.create(
+            user=request.user,
+            food_name=food['description'],
+            quantity=usda_form.cleaned_data['quantity'],
+            quantity_type=food['serving_size_unit'].lower(),
+            calories=round(food['calories'] * multiplier, 2),
+            protein=round(food['protein'] * multiplier, 2),
+            carbohydrates=round(food['carbohydrates'] * multiplier, 2),
+            fat=round(food['fat'] * multiplier, 2),
+            date=usda_form.cleaned_data['date'],
+        )
+        return redirect('nutrition')
 
     return render(request, 'nutrition/create_food_log.html', {
-        'form': form,
+        'manual_form': manual_form,
+        'usda_form': usda_form,
         'has_saved_foods': Food.objects.filter(user=request.user).exists(),
+        'search_query': search_query,
+        'search_results': search_results,
+        'search_error': search_error,
     })
 
 

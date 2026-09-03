@@ -1,2 +1,2 @@
 
-from .FoodLogForm import FoodLogForm
+from .FoodLogForm import FoodLogForm, USDAFoodLogForm

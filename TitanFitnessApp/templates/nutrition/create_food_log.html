@@ -6,6 +6,63 @@
 </head>
 <body>
     <h1>Add Food to Diary</h1>
+
+    <section>
+        <h2>Search USDA FoodData Central</h2>
+        <form method="get">
+            <label for="food-search">Food name</label>
+            <input id="food-search" type="search" name="q" value="{{ search_query }}" required>
+            <button type="submit">Search</button>
+        </form>
+
+        {% if search_error %}
+            <p>{{ search_error }}</p>
+        {% endif %}
+
+        {% if search_results %}
+            <h3>Search results</h3>
+            {{ usda_form.non_field_errors }}
+            {{ usda_form.fdc_id.errors }}
+            {{ usda_form.quantity.errors }}
+            {{ usda_form.date.errors }}
+            <ul>
+                {% for food in search_results %}
+                    <li>
+                        <strong>{{ food.description }}</strong>
+                        {% if food.brand_owner %} — {{ food.brand_owner }}{% endif %}
+                        <br>
+                        {% if food.serving_size %}
+                            USDA serving: {{ food.serving_size }} {{ food.serving_size_unit }}<br>
+                        {% endif %}
+                        Calories: {{ food.calories|default_if_none:"Unknown" }} kcal ·
+                        Protein: {{ food.protein|default_if_none:"Unknown" }} g ·
+                        Carbohydrates: {{ food.carbohydrates|default_if_none:"Unknown" }} g ·
+                        Fat: {{ food.fat|default_if_none:"Unknown" }} g
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="usda">
+                            <input type="hidden" name="fdc_id" value="{{ food.fdc_id }}">
+                            <p>
+                                <label>Consumed quantity</label>
+                                <input type="number" name="quantity" min="0.01" step="0.01" required>
+                                {{ food.serving_size_unit }}
+                            </p>
+                            <p>
+                                <label>Date</label>
+                                <input type="date" name="date" value="{{ usda_form.date.value|date:'Y-m-d' }}" required>
+                            </p>
+                            <button type="submit">Add USDA food to diary</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% elif search_query and not search_error %}
+            <p>No USDA foods matched “{{ search_query }}”.</p>
+        {% endif %}
+    </section>
+
+    <section>
+    <h2>Add a saved food to your diary</h2>
     <p>Select one of your saved foods, enter the consumed quantity, and choose the day.</p>
 
     {% if not has_saved_foods %}
@@ -14,10 +71,12 @@
     {% else %}
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            <input type="hidden" name="action" value="manual">
+            {{ manual_form.as_p }}
             <button type="submit">Add to diary</button>
         </form>
     {% endif %}
+    </section>
 
     <p><a href="{% url 'nutrition' %}">Back to nutrition</a></p>
 </body>

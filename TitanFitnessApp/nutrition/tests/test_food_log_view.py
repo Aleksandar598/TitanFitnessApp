@@ -1,4 +1,5 @@
 from datetime import date
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
@@ -49,3 +50,52 @@ class CreateFoodLogViewTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(FoodLog.objects.count(), 0)
+
+    @patch('nutrition.views.search_foods')
+    def test_page_displays_usda_search_results(self, mock_search_foods):
+        mock_search_foods.return_value = [{
+            'fdc_id': 123,
+            'description': 'USDA yogurt',
+            'data_type': 'Foundation',
+            'brand_owner': '',
+            'serving_size': 100,
+            'serving_size_unit': 'g',
+            'calories': 61,
+            'protein': 3.5,
+            'carbohydrates': 4.7,
+            'fat': 3.3,
+        }]
+        self.client.login(username=self.user.username, password='password123')
+
+        response = self.client.get(self.url, {'q': 'yogurt'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'USDA yogurt')
+        mock_search_foods.assert_called_once_with('yogurt')
+
+    def test_user_can_log_a_usda_search_result(self):
+        session = self.client.session
+        session['usda_search_results'] = [{
+            'fdc_id': 987,
+            'description': 'USDA yogurt',
+            'data_type': 'Foundation',
+            'brand_owner': '',
+            'serving_size': 100,
+            'serving_size_unit': 'g',
+            'calories': 61,
+            'protein': 3.5,
+            'carbohydrates': 4.7,
+            'fat': 3.3,
+        }]
+        session.save()
+        self.client.login(username=self.user.username, password='password123')
+
+        response = self.client.post(self.url, {
+            'action': 'usda', 'fdc_id': 987, 'quantity': 150, 'date': '2026-09-03',
+        })
+
+        self.assertRedirects(response, reverse('nutrition'))
+        log = FoodLog.objects.get()
+        self.assertIsNone(log.food)
+        self.assertEqual(log.food_name, 'USDA yogurt')
+        self.assertEqual(log.calories, 91.5)

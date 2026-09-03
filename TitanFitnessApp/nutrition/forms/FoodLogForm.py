@@ -23,3 +23,35 @@ class FoodLogForm(forms.ModelForm):
         if quantity <= 0:
             raise forms.ValidationError('Quantity must be greater than 0.')
         return quantity
+
+
+class USDAFoodLogForm(forms.Form):
+    fdc_id = forms.IntegerField(widget=forms.HiddenInput)
+    quantity = forms.FloatField(min_value=0.01, widget=forms.NumberInput(attrs={'min': '0.01', 'step': '0.01'}))
+    date = forms.DateField(initial=timezone.localdate, widget=forms.DateInput(attrs={'type': 'date'}))
+
+    def __init__(self, *args, search_results, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.search_results = {str(food['fdc_id']): food for food in search_results if food.get('fdc_id') is not None}
+
+    def clean_fdc_id(self):
+        fdc_id = self.cleaned_data['fdc_id']
+        try:
+            self.selected_food = self.search_results[str(fdc_id)]
+        except KeyError:
+            raise forms.ValidationError('This USDA search result is no longer available. Search again.')
+        return fdc_id
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not hasattr(self, 'selected_food'):
+            return cleaned_data
+
+        food = self.selected_food
+        serving_size = food.get('serving_size')
+        quantity_type = (food.get('serving_size_unit') or '').lower()
+        if not serving_size or serving_size <= 0 or quantity_type not in ('g', 'ml'):
+            raise forms.ValidationError('USDA did not provide a usable serving size in grams or milliliters for this food.')
+        if any(food.get(nutrient) is None for nutrient in ('calories', 'protein', 'carbohydrates', 'fat')):
+            raise forms.ValidationError('USDA did not provide complete nutrition information for this food.')
+        return cleaned_data
