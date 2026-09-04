@@ -82,8 +82,8 @@ class WorkoutExercise(models.Model):
 
 class WorkoutExerciseSet(models.Model):
     
-    workout_exercise = models.ForeignKey(
-        WorkoutExercise,
+    workout_session_exercise = models.ForeignKey(
+        'WorkoutSessionExercise',
         on_delete=models.CASCADE,
         related_name='sets',
     )
@@ -95,10 +95,69 @@ class WorkoutExerciseSet(models.Model):
         ordering = ('set_number',)
         constraints = [
             models.UniqueConstraint(
-                fields=('workout_exercise', 'set_number'),
-                name='unique_set_number_per_workout_exercise',
+                fields=('workout_session_exercise', 'set_number'),
+                name='unique_set_number_per_workout_session_exercise',
             ),
         ]
 
     def __str__(self):
-        return f'{self.workout_exercise} — set {self.set_number}'
+        return f'{self.workout_session_exercise} — set {self.set_number}'
+
+
+class WorkoutSession(models.Model):
+
+    STATUS_ACTIVE = 'active'
+    STATUS_COMPLETED = 'completed'
+    STATUS_CHOICES = [
+        (STATUS_ACTIVE, 'Active'),
+        (STATUS_COMPLETED, 'Completed'),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='workout_sessions',
+    )
+    workout = models.ForeignKey(
+        Workout,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='sessions',
+    )
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
+    started_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('-started_at',)
+
+    def __str__(self):
+        return f'{self.user} — session started {self.started_at:%Y-%m-%d %H:%M}'
+
+
+class WorkoutSessionExercise(models.Model):
+
+    workout_session = models.ForeignKey(
+        WorkoutSession,
+        on_delete=models.CASCADE,
+        related_name='session_exercises',
+    )
+    exercise = models.ForeignKey(Exercise, on_delete=models.PROTECT, related_name='session_uses')
+    position = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ('position', 'id')
+        constraints = [
+            models.UniqueConstraint(
+                fields=('workout_session', 'exercise'),
+                name='unique_exercise_per_workout_session',
+            ),
+            models.UniqueConstraint(
+                fields=('workout_session', 'position'),
+                name='unique_workout_session_exercise_position',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.workout_session}: {self.exercise}'

@@ -1,10 +1,31 @@
 from datetime import date
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 
 
 # Create your models here.
+class CustomUserManager(UserManager):
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        email = email or f'{username}@admin.local'
+
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('birth_date', date(1990, 1, 1))
+        extra_fields.setdefault('height', 170)
+        extra_fields.setdefault('gender', 'male')
+        extra_fields.setdefault('current_weight', 70)
+        extra_fields.setdefault('target_weight', 70)
+        extra_fields.setdefault('fitness_goal', 0)
+        extra_fields.setdefault('activity_level', 1.2)
+
+        return super().create_superuser(
+            username=username,
+            email=email,
+            password=password,
+            **extra_fields,
+        )
 
 class CustomUser(AbstractUser):
     GOAL_CHOICES = [
@@ -30,7 +51,8 @@ class CustomUser(AbstractUser):
     fitness_goal = models.IntegerField(blank=False, null=False, choices=GOAL_CHOICES, verbose_name='Fitness Goal')
     activity_level = models.FloatField(blank=False, null=False, choices=ACTIVITY_CHOICES, verbose_name='Activity Level')
 
-    REQUIRED_FIELDS = ['email', 'birth_date', 'height', 'fitness_goal', 'current_weight', 'target_weight', 'gender', 'activity_level']
+    REQUIRED_FIELDS = []
+    objects = CustomUserManager()
 
     def __str__(self):
         return self.username
@@ -45,4 +67,6 @@ class CustomUser(AbstractUser):
 
         result_calories = bmr * self.activity_level
         return result_calories + self.fitness_goal
+
+
 

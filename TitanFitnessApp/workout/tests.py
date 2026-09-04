@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from users.models import CustomUser
-from workout.models import Exercise, Workout, WorkoutExercise, WorkoutExerciseSet
+from workout.models import Exercise, WorkoutExerciseSet, WorkoutSession, WorkoutSessionExercise
 
 
 class WorkoutModelsTest(TestCase):
@@ -16,22 +16,22 @@ class WorkoutModelsTest(TestCase):
             name='Bench Press', muscle_group='Chest', description='Barbell chest press.',
         )
 
-    def test_workout_can_have_an_exercise_with_planned_sets(self):
-        workout = Workout.objects.create(user=self.user, name='Push Day')
-        workout_exercise = WorkoutExercise.objects.create(
-            workout=workout,
+    def test_session_exercise_can_have_sets(self):
+        session = WorkoutSession.objects.create(user=self.user)
+        session_exercise = WorkoutSessionExercise.objects.create(
+            workout_session=session,
             exercise=self.exercise,
             position=1,
         )
-        planned_set = WorkoutExerciseSet.objects.create(
-            workout_exercise=workout_exercise,
+        workout_set = WorkoutExerciseSet.objects.create(
+            workout_session_exercise=session_exercise,
             set_number=1,
             weight=60,
             repetitions=8,
         )
 
-        self.assertEqual(workout.workout_exercises.get(), workout_exercise)
-        self.assertEqual(workout_exercise.sets.get(), planned_set)
+        self.assertEqual(session.session_exercises.get(), session_exercise)
+        self.assertEqual(session_exercise.sets.get(), workout_set)
 
     def test_user_can_create_a_personal_exercise(self):
         self.client.login(username=self.user.username, password='password123')
@@ -81,3 +81,22 @@ class WorkoutModelsTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'workout/workout.html')
+
+    def test_user_can_start_a_session_and_add_an_available_exercise(self):
+        self.client.login(username=self.user.username, password='password123')
+
+        response = self.client.post(reverse('start_workout_session'))
+
+        session = WorkoutSession.objects.get(user=self.user)
+        self.assertRedirects(response, reverse('workout_session_detail', args=[session.id]))
+
+        response = self.client.post(
+            reverse('add_exercise_to_session', args=[session.id]),
+            {'exercise': self.exercise.id},
+        )
+
+        self.assertRedirects(response, reverse('workout_session_detail', args=[session.id]))
+        self.assertTrue(WorkoutSessionExercise.objects.filter(
+            workout_session=session,
+            exercise=self.exercise,
+        ).exists())

@@ -13,7 +13,16 @@
     </div>
 
     <div>
-        <p>Workout plans will be available here next.</p>
+        {% if active_session %}
+            <a href="{% url 'workout_session_detail' active_session.id %}">
+                Resume workout
+            </a>
+        {% else %}
+            <form method="post" action="{% url 'start_workout_session' %}">
+                {% csrf_token %}
+                <button type="submit">Start workout</button>
+            </form>
+        {% endif %}
     </div>
 
     <p><a href="{% url 'dashboard' %}">Back to dashboard</a></p>

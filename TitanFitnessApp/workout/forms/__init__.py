@@ -1,1 +1,2 @@
 from .ExerciseForm import ExerciseForm
+from .WorkoutSessionExerciseForm import WorkoutSessionExerciseForm
