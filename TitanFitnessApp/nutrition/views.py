@@ -13,7 +13,16 @@ from nutrition.services.usda import USDAApiError, search_foods
 
 @login_required
 def nutrition_view(request):
-    return render(request,'nutrition/nutrition.html')
+    context = _food_log_context(
+        request.user,
+        timezone.localdate(),
+    )
+
+    return render(
+        request,
+        'nutrition/nutrition.html',
+        context,
+    )
 
 @login_required
 def create_food_view(request):
