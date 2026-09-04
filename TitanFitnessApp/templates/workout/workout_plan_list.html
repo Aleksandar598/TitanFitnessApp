@@ -1,8 +1,11 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Titan - Workout plans</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <h1>Workout plans</h1>
@@ -24,24 +27,27 @@
     {% if workout_plans %}
         <ul>
             {% for workout in workout_plans %}
-                <li>
-                    <a href="{% url 'workout_plan_detail' workout.id %}">
-                        {{ workout.name }}
-                    </a>
+                <li class="workout-plan-item">
+                    <div class="plan-actions">
+                        <a class="plan-name-button"
+                           href="{% url 'workout_plan_detail' workout.id %}">
+                            {{ workout.name }}
+                        </a>
 
-                    <form method="post" action="{% url 'start_workout_plan' workout.id %}">
-                        {% csrf_token %}
-                        <input type="hidden"
-                               name="next"
-                               value="{% url 'workout_plan_list' %}">
-                        <button type="submit">Start plan</button>
-                    </form>
+                        <form method="post" action="{% url 'start_workout_plan' workout.id %}">
+                            {% csrf_token %}
+                            <input type="hidden"
+                                   name="next"
+                                   value="{% url 'workout_plan_list' %}">
+                            <button type="submit" class="plan-small-button">Start plan</button>
+                        </form>
 
-                    <form method="post"
-                          action="{% url 'delete_workout_plan' workout.id %}">
-                        {% csrf_token %}
-                        <button type="submit">Delete plan</button>
-                    </form>
+                        <form method="post"
+                              action="{% url 'delete_workout_plan' workout.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="plan-small-button">Delete plan</button>
+                        </form>
+                    </div>
                 </li>
             {% endfor %}
         </ul>

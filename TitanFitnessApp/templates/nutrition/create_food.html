@@ -1,6 +1,9 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"
     <meta charset="UTF-8">
     <title>Titan - {% if is_edit %}Edit Food{% else %}Add Food{% endif %}</title>
     <style>
@@ -18,13 +21,17 @@
     </style>
 </head>
 <body>
-    <h2>{% if is_edit %}Edit Food{% else %}Add New Food Item{% endif %}</h2>
-    <form method="post">
+<header class="page-header">
+    <h1>{% if is_edit %}Edit Food{% else %}Add New Food Item{% endif %}</h1>
+</header>
+
+    <form method="post" class="form">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">{% if is_edit %}Save Changes{% else %}Save Food{% endif %}</button>
     </form>
     <p>
+
         {% if is_edit %}
         <a href="{% url 'saved_foods' %}"><button type="button">Cancel</button></a>
         {% else %}

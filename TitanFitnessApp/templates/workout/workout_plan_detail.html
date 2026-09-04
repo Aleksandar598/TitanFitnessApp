@@ -1,18 +1,21 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Titan - {{ workout.name }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"
 </head>
 <body>
+<header class="page-header">
     <h1>{{ workout.name }}</h1>
-
+</header>
     {% if messages %}
         {% for message in messages %}
             <p>{{ message }}</p>
         {% endfor %}
     {% endif %}
-
+<div class="beside-buttons">
     <form method="post" action="{% url 'start_workout_plan' workout.id %}">
         {% csrf_token %}
         <input type="hidden"
@@ -26,7 +29,7 @@
         {% csrf_token %}
         <button type="submit">Delete plan</button>
     </form>
-
+</div>
     <h2>Exercises</h2>
 
     {% if workout.workout_exercises.exists %}

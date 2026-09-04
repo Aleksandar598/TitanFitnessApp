@@ -1,12 +1,17 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <meta charset="UTF-8">
     <title>Nutrition Overview</title>
 </head>
 <body>
 
+    <header class="page-header">
     <h1>Nutrition & Foods</h1>
+    </header>
 
     <h2>Today's intake</h2>
     <p>Calories: {{ totals.calories|floatformat:0 }} kcal</p>

@@ -1,6 +1,16 @@
+{% load static %}
 {% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Saved Foods</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"
+</head>
 <div class="saved-foods-container">
-    <h2>My Saved Foods</h2>
+
+    <header class="page-header">
+    <h1>My Saved Foods</h1>
+    </header>
 
     {% if foods %}
         <ul class="food-list">

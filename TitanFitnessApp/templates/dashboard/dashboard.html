@@ -1,12 +1,28 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <meta charset="UTF-8">
     <title>Dashboard</title>
 </head>
 <body>
-<h1>Welcome to the Dashboard, {{ username }}!</h1>
-
+<header class="page-header">
+    <h1>Welcome to the Dashboard, {{ username }}!</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <p class="message">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <main class="navigation">
+    <a href="{% url 'nutrition' %}"><button type="button">Nutrition menu</button></a>
+    <a href="{% url 'workout' %}"><button type="button">Workout menu</button></a>
+    <a href="{% url 'settings' %}"><button type="button">Settings</button></a>
+    <a href="{% url 'community' %}"><button type="button">Community</button></a>
+    </main>
+</header>
+<main class="page-content">
 <h2>Today's nutrition</h2>
 <p>Workout calories burned today: {{ workout_calories_burned }} kcal</p>
 <p>Calories: {{ daily_intake.calories }} / {{ daily_goals.calories }} kcal</p>
@@ -70,13 +86,10 @@
 
 <form action="{% url 'logout' %}" method="post" style="display: inline;">
     {% csrf_token %}
-    <a href="{% url 'nutrition' %}"><button type="button">Nutrition menu</button></a>
-    <a href="{% url 'workout' %}"><button type="button">Workout menu</button></a>
-    <a href="{% url 'settings' %}"><button type="button">Settings</button></a>
-    <a href="{% url 'community' %}"><button type="button">Community</button></a>
     <button type="submit" class="btn btn-danger">
         Log Out
     </button>
 </form>
+</main>
 </body>
 </html>

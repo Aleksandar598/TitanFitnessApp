@@ -1,11 +1,16 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Titan - Workouts</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"
 </head>
 <body>
+<header class="page-header">
     <h1>Workouts</h1>
+</header>
     <p>Manage your exercises and workout plans.</p>
     <p>Calories burned today: {{ calories_burned_today }} kcal</p>
 

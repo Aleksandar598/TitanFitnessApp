@@ -1,0 +1,143 @@
+
+body {
+    margin: 0;
+    padding: 32px;
+    background-color: #B2F2BB;
+    color: #1f2937;
+    font-family: Arial, sans-serif;
+}
+.page-header {
+    margin: -32px -32px 0;
+    padding: 16px 32px;
+    background-color: darkslategray;
+}
+.page-header h1 {
+    margin-top: 0;
+    color: lightgray;
+
+}
+
+h2 {
+    color: #374151;
+}
+
+button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #FFF9EC;
+    color: black;
+    font-size: 14px;
+    cursor: pointer;
+    outline: black;
+    outline-style: double;
+}
+.beside-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+button:hover {
+    background-color: #1d4ed8;
+}
+.usda-result {
+    margin-bottom: 28px;
+}
+.usda-action-form {
+    margin: 8px 6px 0 0;
+}
+
+.usda-action-button {
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+.workout-plan-item {
+    margin-bottom: 24px;
+}
+
+.plan-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.plan-actions form {
+    margin: 0;
+}
+
+.plan-name-button {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background-color: #FFF9EC;
+    color: black;
+    font-size: 14px;
+    outline: black double;
+}
+
+.plan-name-button:hover {
+    background-color: #1d4ed8;
+    text-decoration: none;
+}
+
+.plan-small-button {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.session-actions {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.session-actions form,
+.session-actions p {
+    margin: 0;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    max-width: 200px;
+    box-sizing: border-box;
+    margin-top: 4px;
+    margin-bottom: 14px;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+.form label {
+    display: inline-block;
+    width: 130px;
+    vertical-align: top;
+}
+.form textarea {
+    height: 80px;
+    resize: vertical;
+}
+.message {
+    color: lightgray;
+}
+
+a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.card {
+    max-width: 600px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}

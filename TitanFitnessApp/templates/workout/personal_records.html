@@ -1,12 +1,16 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Titan - Personal records</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+<header class="page-header">
     <h1>Personal records</h1>
-
+</header>
     {% for record in records %}
         <p>
             <strong>{{ record.exercise.name }}</strong>:

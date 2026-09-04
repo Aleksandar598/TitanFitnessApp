@@ -1,12 +1,16 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Titan - Create Exercise</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"
 </head>
 <body>
+<header class="page-header">
     <h1>Create Personal Exercise</h1>
-    <form method="post">
+</header>
+    <form method="post" class="form">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Create exercise</button>

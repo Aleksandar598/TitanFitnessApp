@@ -1,11 +1,16 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"
     <meta charset="UTF-8">
     <title>Titan - {{ title }}</title>
 </head>
 <body>
+<header class="page-header">
     <h1>{{ title }}</h1>
+</header>
 
     {% if show_history_form %}
         <form method="get">

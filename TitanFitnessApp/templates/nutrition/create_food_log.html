@@ -1,11 +1,16 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"
     <meta charset="UTF-8">
     <title>Titan - Add Food to Diary</title>
 </head>
 <body>
+<header class="page-header">
     <h1>Add Food to Diary</h1>
+</header>
 
     <section>
         <h2>Search USDA FoodData Central</h2>
@@ -29,7 +34,7 @@
             {{ usda_save_form.fdc_id.errors }}
             <ul>
                 {% for food in search_results %}
-                    <li>
+                    <li class="usda-result">
                         <strong>{{ food.description }}</strong>
                         {% if food.brand_owner %} — {{ food.brand_owner }}{% endif %}
                         <br>
@@ -38,7 +43,7 @@
                         Protein: {{ food.protein|default_if_none:"Unknown" }} g ·
                         Carbohydrates: {{ food.carbohydrates|default_if_none:"Unknown" }} g ·
                         Fat: {{ food.fat|default_if_none:"Unknown" }} g
-                        <form method="post">
+                        <form method="post" class="usda-action-form">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="usda">
                             <input type="hidden" name="fdc_id" value="{{ food.fdc_id }}">
@@ -51,13 +56,13 @@
                                 <label>Date</label>
                                 <input type="date" name="date" value="{{ usda_form.date.value|date:'Y-m-d' }}" required>
                             </p>
-                            <button type="submit">Add USDA food to diary</button>
+                            <button type="submit" class="usda-action-button">Add USDA food to diary</button>
                         </form>
-                        <form method="post">
+                        <form method="post" class="usda-action-form">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="save_usda">
                             <input type="hidden" name="fdc_id" value="{{ food.fdc_id }}">
-                            <button type="submit">Save to My Foods</button>
+                            <button type="submit" class="usda-action-button">Save to My Foods</button>
                         </form>
                     </li>
                 {% endfor %}

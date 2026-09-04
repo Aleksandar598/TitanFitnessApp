@@ -1,12 +1,22 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Titan - Active Workout</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+<header class="page-header">
     <h1>Active Workout</h1>
-
+    <div class="beside-buttons">
+    <form method="post" action="{% url 'finish_workout_session' session.id %}">
+                {% csrf_token %}
+                <button type="submit">Finish workout</button>
+            </form>
+    <p><a href="{% url 'workout' %}"><button type="button">Back to workout menu</button></a></p>
+    </div>
+</header>
     {% if messages %}
         {% for message in messages %}
             <p>{{ message }}</p>
@@ -75,20 +85,15 @@
 
     {% if session.status == 'active' %}
         <h2>Add exercise</h2>
-        <form method="post" action="{% url 'add_exercise_to_session' session.id %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Add exercise</button>
-        </form>
-
-        <form method="post" action="{% url 'finish_workout_session' session.id %}">
-            {% csrf_token %}
-            <button type="submit">Finish workout</button>
-        </form>
+        <div class="session-actions">
+            <form method="post" action="{% url 'add_exercise_to_session' session.id %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Add exercise</button>
+            </form>
+        </div>
     {% else %}
         <p>This workout was completed at {{ session.completed_at }}.</p>
     {% endif %}
-
-    <p><a href="{% url 'workout' %}"><button type="button">Back to workout menu</button></a></p>
 </body>
 </html>
