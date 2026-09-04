@@ -149,3 +149,37 @@ class WorkoutModelsTest(TestCase):
         session.refresh_from_db()
         self.assertEqual(session.status, WorkoutSession.STATUS_COMPLETED)
         self.assertIsNotNone(session.completed_at)
+
+    def test_finishing_workout_saves_calories_burned(self):
+        session = WorkoutSession.objects.create(user=self.user)
+        session_exercise = WorkoutSessionExercise.objects.create(
+            workout_session=session,
+            exercise=self.exercise,
+            position=1,
+        )
+        WorkoutExerciseSet.objects.create(
+            workout_session_exercise=session_exercise,
+            set_number=1,
+            weight=60,
+            repetitions=8,
+        )
+        WorkoutExerciseSet.objects.create(
+            workout_session_exercise=session_exercise,
+            set_number=2,
+            weight=40,
+            repetitions=10,
+        )
+        self.client.login(username=self.user.username, password='password123')
+
+        response = self.client.post(
+            reverse('finish_workout_session', args=[session.id]),
+        )
+
+        self.assertRedirects(response, reverse('workout'))
+        session.refresh_from_db()
+
+        # Volume: (60 × 8) + (40 × 10) = 880
+        # Repetitions: 8 + 10 = 18
+        # Weight: 80 kg
+        # round((880 + (18 × 80 × 1)) × 0.014) = 32
+        self.assertEqual(session.calories_burned, 32)

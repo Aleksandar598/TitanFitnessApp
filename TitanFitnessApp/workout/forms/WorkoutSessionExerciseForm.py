@@ -14,6 +14,7 @@ class WorkoutSessionExerciseForm(forms.ModelForm):
         self.workout_session = workout_session
         self.fields['exercise'].queryset = Exercise.objects.filter(
             Q(created_by__isnull=True) | Q(created_by=user),
+            is_active=True,
         )
 
     def clean_exercise(self):

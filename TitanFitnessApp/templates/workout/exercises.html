@@ -15,11 +15,21 @@
                 <li>
                     {{ exercise.name }}{% if exercise.muscle_group %} — {{ exercise.muscle_group }}{% endif %}
                     {% if not exercise.is_catalog_exercise %}(personal){% endif %}
+
+                    {% if exercise.created_by == user %}
+                        <form method="post"
+                              action="{% url 'archive_personal_exercise' exercise.id %}">
+                            {% csrf_token %}
+                            <button type="submit">Remove</button>
+                        </form>
+                    {% endif %}
                 </li>
             {% endfor %}
         </ul>
     {% else %}
         <p>No exercises are available yet. Create a personal exercise to get started.</p>
     {% endif %}
+
+    <p><a href="{% url 'workout' %}">Back to workouts</a></p>
 </body>
 </html>

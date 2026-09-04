@@ -25,6 +25,7 @@ def workout_view(request):
 def exercise_list_view(request):
     exercises = Exercise.objects.filter(
         Q(created_by__isnull=True) | Q(created_by=request.user),
+        is_active=True,
     )
     return render(request, 'workout/exercises.html', {
         'available_exercises': exercises,
@@ -44,6 +45,22 @@ def create_personal_exercise_view(request):
         form = ExerciseForm(user=request.user)
 
     return render(request, 'workout/create_exercise.html', {'form': form})
+
+
+@login_required
+@require_POST
+def archive_personal_exercise_view(request, exercise_id):
+    exercise = get_object_or_404(
+        Exercise,
+        id=exercise_id,
+        created_by=request.user,
+        is_active=True,
+    )
+
+    exercise.is_active = False
+    exercise.save(update_fields=('is_active',))
+
+    return redirect('exercise_list')
 
 
 @login_required
@@ -171,5 +188,6 @@ def finish_workout_session_view(request, session_id):
     )
     session.status = WorkoutSession.STATUS_COMPLETED
     session.completed_at = timezone.now()
-    session.save(update_fields=('status', 'completed_at'))
+    session.set_calories()
+    session.save(update_fields=('status', 'completed_at', 'calories_burned'))
     return redirect('workout')

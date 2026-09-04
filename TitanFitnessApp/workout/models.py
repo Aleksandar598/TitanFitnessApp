@@ -15,6 +15,7 @@ class Exercise(models.Model):
         on_delete=models.CASCADE,
         related_name='custom_exercises',
     )
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ('name',)
@@ -40,6 +41,7 @@ class Exercise(models.Model):
 
     def __str__(self):
         return self.name if self.is_catalog_exercise else f'{self.name} (personal)'
+    
 
 
 class Workout(models.Model):
@@ -61,6 +63,7 @@ class Workout(models.Model):
 
     def __str__(self):
         return self.name
+
 
 
 class WorkoutExercise(models.Model):
@@ -128,6 +131,7 @@ class WorkoutSession(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
+    calories_burned = models.PositiveIntegerField(default=0, null=True, blank=True)
 
     class Meta:
         ordering = ('-started_at',)
@@ -135,6 +139,19 @@ class WorkoutSession(models.Model):
     def __str__(self):
         return f'{self.user} — session started {self.started_at:%Y-%m-%d %H:%M}'
 
+    def set_calories(self):
+        total_volume = 0
+        total_repetitions = 0
+        k = 1
+
+        for session_exercise in self.session_exercises.prefetch_related('sets'):
+            for workout_set in session_exercise.sets.all():
+                total_volume += workout_set.weight * workout_set.repetitions
+                total_repetitions += workout_set.repetitions
+
+        body_weight = self.user.current_weight
+
+        self.calories_burned = round((total_volume + ( total_repetitions * body_weight * k )) * 0.014)
 
 class WorkoutSessionExercise(models.Model):
 
