@@ -16,6 +16,16 @@ urlpatterns = [
         name='add_set_to_session_exercise',
     ),
     path(
+        'sessions/<int:session_id>/exercises/<int:session_exercise_id>/sets/<int:set_id>/remove/',
+        views.remove_set_from_session_exercise_view,
+        name='remove_set_from_session_exercise',
+    ),
+    path(
+        'sessions/<int:session_id>/exercises/<int:session_exercise_id>/remove/',
+        views.remove_exercise_from_session_view,
+        name='remove_exercise_from_session',
+    ),
+    path(
         'sessions/<int:session_id>/finish/',
         views.finish_workout_session_view,
         name='finish_workout_session',

@@ -121,6 +121,47 @@ def add_set_to_session_exercise_view(request, session_id, session_exercise_id):
 
 @login_required
 @require_POST
+def remove_set_from_session_exercise_view(  request, session_id, session_exercise_id, set_id, ):
+    session = get_object_or_404(
+        WorkoutSession,
+        id=session_id,
+        user=request.user,
+        status=WorkoutSession.STATUS_ACTIVE,
+    )
+    session_exercise = get_object_or_404(
+        WorkoutSessionExercise,
+        id=session_exercise_id,
+        workout_session=session,
+    )
+    workout_set = get_object_or_404(
+        WorkoutExerciseSet,
+        id=set_id,
+        workout_session_exercise=session_exercise,
+    )
+    workout_set.delete()
+    return redirect('workout_session_detail', session_id=session.id)
+
+
+@login_required
+@require_POST
+def remove_exercise_from_session_view(request, session_id, session_exercise_id,):
+    session = get_object_or_404(
+        WorkoutSession,
+        id=session_id,
+        user=request.user,
+        status=WorkoutSession.STATUS_ACTIVE,
+    )
+    session_exercise = get_object_or_404(
+        WorkoutSessionExercise,
+        id=session_exercise_id,
+        workout_session=session,
+    )
+    session_exercise.delete()
+    return redirect('workout_session_detail', session_id=session.id)
+
+
+@login_required
+@require_POST
 def finish_workout_session_view(request, session_id):
     session = get_object_or_404(
         WorkoutSession,

@@ -15,11 +15,27 @@
                 <li>
                     <h3>{{ session_exercise.exercise.name }}</h3>
 
+                    {% if session.status == 'active' %}
+                        <form method="post"
+                              action="{% url 'remove_exercise_from_session' session.id session_exercise.id %}">
+                            {% csrf_token %}
+                            <button type="submit">Remove exercise</button>
+                        </form>
+                    {% endif %}
+
                     {% for workout_set in session_exercise.sets.all %}
                         <p>
                             Set {{ workout_set.set_number }}:
                             {{ workout_set.weight }} kg ×
                             {{ workout_set.repetitions }} reps
+
+                            {% if session.status == 'active' %}
+                                <form method="post"
+                                      action="{% url 'remove_set_from_session_exercise' session.id session_exercise.id workout_set.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Remove</button>
+                                </form>
+                            {% endif %}
                         </p>
                     {% empty %}
                         <p>No sets added yet.</p>
