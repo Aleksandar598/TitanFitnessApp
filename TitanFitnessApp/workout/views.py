@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.db.models import Max, Q
+from django.db.models import Max, Q, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
@@ -30,8 +30,18 @@ def workout_view(request):
         user=request.user,
         status=WorkoutSession.STATUS_ACTIVE,
     ).first()
+
+    calories_burned_today = WorkoutSession.objects.filter(
+        user=request.user,
+        status=WorkoutSession.STATUS_COMPLETED,
+        completed_at__date=timezone.localdate(),
+    ).aggregate(
+        total=Sum('calories_burned'),
+    )['total'] or 0
+
     return render(request, 'workout/workout.html', {
         'active_session': active_session,
+        'calories_burned_today': calories_burned_today,
     })
 
 

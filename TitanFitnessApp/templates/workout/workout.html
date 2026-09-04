@@ -7,6 +7,7 @@
 <body>
     <h1>Workouts</h1>
     <p>Manage your exercises and workout plans.</p>
+    <p>Calories burned today: {{ calories_burned_today }} kcal</p>
 
     <div>
         <a href="{% url 'exercise_list' %}">Exercises</a>
@@ -29,5 +30,10 @@
     </div>
 
     <p><a href="{% url 'dashboard' %}">Back to dashboard</a></p>
+
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
 </body>
 </html>
