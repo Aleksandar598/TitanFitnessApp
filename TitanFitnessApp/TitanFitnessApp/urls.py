@@ -27,7 +27,7 @@ from nutrition.views import (
     remove_today_food_log_view,
     today_food_log_view,
 )
-from users.views import register_view, unregistered_menu_view, login_view, logout_view
+from users.views import register_view, unregistered_menu_view, login_view, logout_view, settings_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -36,6 +36,7 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('', unregistered_menu_view, name='home'),
     path('dashboard/', dashboard_view, name='dashboard'),
+    path('settings/', settings_view, name='settings'),
     path('logout/', logout_view, name='logout'),
     path('create_food/', create_food_view, name='create_food'),
     path('food-log/add/', create_food_log_view, name='create_food_log'),

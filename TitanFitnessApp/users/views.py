@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 
 from users.forms.LoginUserForm import LoginUserForm
 from users.forms.CreateUserForm import CreateUserForm
+from users.forms.UserSettingsForm import UserSettingsForm
 
 
 # Create your views here.
@@ -44,6 +45,30 @@ def login_view(request):
     else:
         form = LoginUserForm()
     return render(request, 'users/login.html', {'form': form})
+
+
+@login_required
+def settings_view(request):
+    if request.method == 'POST':
+        form = UserSettingsForm(
+            request.POST,
+            instance=request.user,
+        )
+
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request,
+                'Your settings have been updated.',
+            )
+            return redirect('settings')
+    else:
+        form = UserSettingsForm(instance=request.user)
+
+    return render(request, 'users/settings.html', {
+        'form': form,
+    })
+
 
 @login_required
 def logout_view(request):
