@@ -6,6 +6,13 @@
 </head>
 <body>
     <h1>Active Workout</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
     <p>Started: {{ session.started_at }}</p>
 
     <h2>Exercises</h2>
@@ -28,6 +35,16 @@
                             Set {{ workout_set.set_number }}:
                             {{ workout_set.weight }} kg ×
                             {{ workout_set.repetitions }} reps
+
+                            {% if workout_set.is_completed %}
+                                <strong>Completed</strong>
+                            {% elif session.status == 'active' %}
+                                <form method="post"
+                                      action="{% url 'complete_workout_set' session.id session_exercise.id workout_set.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Complete set</button>
+                                </form>
+                            {% endif %}
 
                             {% if session.status == 'active' %}
                                 <form method="post"

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Titan - Workout history</title>
+</head>
+<body>
+    <h1>Workout history</h1>
+
+    {% if completed_sessions %}
+        <ul>
+            {% for session in completed_sessions %}
+                <li>
+                    Completed: {{ session.completed_at }}
+                    — Calories burned: {{ session.calories_burned }} kcal
+
+                    <a href="{% url 'workout_session_detail' session.id %}">
+                        View details
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no completed workouts yet.</p>
+    {% endif %}
+
+    <p><a href="{% url 'workout' %}">Back to workouts</a></p>
+</body>
+</html>

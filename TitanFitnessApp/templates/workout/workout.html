@@ -12,6 +12,9 @@
         <a href="{% url 'exercise_list' %}">Exercises</a>
     </div>
 
+    <p><a href="{% url 'workout_history' %}">Workout history</a></p>
+    <p><a href="{% url 'workout_plan_list' %}">Workout plans</a></p>
+
     <div>
         {% if active_session %}
             <a href="{% url 'workout_session_detail' active_session.id %}">

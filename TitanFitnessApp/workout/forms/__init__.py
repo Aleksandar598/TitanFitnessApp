@@ -1,3 +1,6 @@
 from .ExerciseForm import ExerciseForm
 from .WorkoutSessionExerciseForm import WorkoutSessionExerciseForm
 from .WorkoutExerciseSetForm import WorkoutExerciseSetForm
+from .WorkoutForm import WorkoutForm
+from .WorkoutExerciseForm import WorkoutExerciseForm
+from .WorkoutPlanExerciseSetForm import WorkoutPlanExerciseSetForm

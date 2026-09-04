@@ -83,6 +83,34 @@ class WorkoutExercise(models.Model):
         return f'{self.workout}: {self.exercise}'
 
 
+class WorkoutPlanExerciseSet(models.Model):
+    workout_exercise = models.ForeignKey(
+        WorkoutExercise,
+        on_delete=models.CASCADE,
+        related_name='planned_sets',
+    )
+    set_number = models.PositiveIntegerField()
+    weight = models.FloatField(
+        validators=[MinValueValidator(0.0)],
+    )
+    repetitions = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ('set_number',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=('workout_exercise', 'set_number'),
+                name='unique_set_number_per_workout_plan_exercise',
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f'{self.workout_exercise} '
+            f'— planned set {self.set_number}'
+        )
+
+
 class WorkoutExerciseSet(models.Model):
     
     workout_session_exercise = models.ForeignKey(
@@ -93,6 +121,7 @@ class WorkoutExerciseSet(models.Model):
     set_number = models.PositiveIntegerField()
     weight = models.FloatField(validators=[MinValueValidator(0.0)])
     repetitions = models.PositiveIntegerField()
+    is_completed = models.BooleanField(default=False)
 
     class Meta:
         ordering = ('set_number',)
@@ -145,7 +174,7 @@ class WorkoutSession(models.Model):
         k = 1
 
         for session_exercise in self.session_exercises.prefetch_related('sets'):
-            for workout_set in session_exercise.sets.all():
+            for workout_set in session_exercise.sets.filter(is_completed=True):
                 total_volume += workout_set.weight * workout_set.repetitions
                 total_repetitions += workout_set.repetitions
 

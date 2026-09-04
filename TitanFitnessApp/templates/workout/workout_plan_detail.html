@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Titan - {{ workout.name }}</title>
+</head>
+<body>
+    <h1>{{ workout.name }}</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'start_workout_plan' workout.id %}">
+        {% csrf_token %}
+        <input type="hidden"
+               name="next"
+               value="{% url 'workout_plan_detail' workout.id %}">
+        <button type="submit">Start plan</button>
+    </form>
+
+    <form method="post"
+          action="{% url 'delete_workout_plan' workout.id %}">
+        {% csrf_token %}
+        <button type="submit">Delete plan</button>
+    </form>
+
+    <h2>Exercises</h2>
+
+    {% if workout.workout_exercises.exists %}
+        <ol>
+            {% for workout_exercise in workout.workout_exercises.all %}
+                <li>
+                    <h3>{{ workout_exercise.exercise.name }}</h3>
+
+                    <form method="post"
+                          action="{% url 'remove_exercise_from_workout_plan' workout.id workout_exercise.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Remove exercise</button>
+                    </form>
+
+                    <h4>Planned sets</h4>
+
+                    {% for planned_set in workout_exercise.planned_sets.all %}
+                        <p>
+                            Set {{ planned_set.set_number }}:
+                            {{ planned_set.weight }} kg ×
+                            {{ planned_set.repetitions }} reps
+
+                            <form method="post"
+                                  action="{% url 'remove_planned_set' workout.id workout_exercise.id planned_set.id %}">
+                                {% csrf_token %}
+                                <button type="submit">Remove set</button>
+                            </form>
+                        </p>
+                    {% empty %}
+                        <p>No planned sets yet.</p>
+                    {% endfor %}
+
+                    <form method="post"
+                          action="{% url 'add_planned_set_to_workout_exercise' workout.id workout_exercise.id %}">
+                        {% csrf_token %}
+                        {{ set_form.as_p }}
+                        <button type="submit">Add planned set</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>No exercises have been added yet.</p>
+    {% endif %}
+
+    <h2>Add exercise</h2>
+
+    <form method="post"
+          action="{% url 'add_exercise_to_workout_plan' workout.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add exercise</button>
+    </form>
+
+    <p><a href="{% url 'workout_plan_list' %}">Back to workout plans</a></p>
+</body>
+</html>
