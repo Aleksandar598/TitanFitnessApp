@@ -2,7 +2,7 @@ from datetime import date
 
 from django.test import TestCase
 
-from users.models import CustomUser
+from users.models import CustomUser, FitnessGoal
 
 
 # Create your tests here.
@@ -60,3 +60,67 @@ class CustomUserTest(TestCase):
         expected_calories = self.bmr * self.lose_user.activity_level + self.lose_user.fitness_goal
         calories = self.lose_user.daily_calorie_goal
         self.assertEqual(calories, expected_calories)
+
+    def test_maintenance_macronutrient_goals(self):
+        goals = self.user.daily_macronutrient_goals
+        calorie_goal = self.user.daily_calorie_goal
+
+        self.assertEqual(goals['calories'], round(calorie_goal))
+        self.assertEqual(
+            goals['carbohydrates'],
+            round(calorie_goal * 0.50 / 4),
+        )
+        self.assertEqual(
+            goals['protein'],
+            round(calorie_goal * 0.20 / 4),
+        )
+        self.assertEqual(
+            goals['fat'],
+            round(calorie_goal * 0.30 / 9),
+        )
+
+    def test_fat_loss_macronutrient_goals(self):
+        goals = self.lose_user.daily_macronutrient_goals
+        calorie_goal = self.lose_user.daily_calorie_goal
+
+        self.assertEqual(
+            goals['carbohydrates'],
+            round(calorie_goal * 0.40 / 4),
+        )
+        self.assertEqual(
+            goals['protein'],
+            round(calorie_goal * 0.30 / 4),
+        )
+        self.assertEqual(
+            goals['fat'],
+            round(calorie_goal * 0.30 / 9),
+        )
+
+    def test_muscle_gain_macronutrient_goals(self):
+        goals = self.gain_user.daily_macronutrient_goals
+        calorie_goal = self.gain_user.daily_calorie_goal
+
+        self.assertEqual(
+            goals['carbohydrates'],
+            round(calorie_goal * 0.45 / 4),
+        )
+        self.assertEqual(
+            goals['protein'],
+            round(calorie_goal * 0.30 / 4),
+        )
+        self.assertEqual(
+            goals['fat'],
+            round(calorie_goal * 0.25 / 9),
+        )
+
+    def test_workout_calories_increase_daily_macronutrient_goals(self):
+        goals = self.user.daily_macronutrient_goals_with_workout(400)
+        base_goals = self.user.daily_macronutrient_goals
+
+        self.assertEqual(goals['calories'], base_goals['calories'] + 400)
+        self.assertEqual(
+            goals['carbohydrates'],
+            base_goals['carbohydrates'] + 60,
+        )
+        self.assertEqual(goals['protein'], base_goals['protein'] + 20)
+        self.assertEqual(goals['fat'], base_goals['fat'] + 9)

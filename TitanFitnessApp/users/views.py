@@ -1,11 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.shortcuts import render, redirect
+from django.utils import timezone
 
 from users.forms.LoginUserForm import LoginUserForm
 from users.forms.CreateUserForm import CreateUserForm
 from users.forms.UserSettingsForm import UserSettingsForm
+from users.models import WeightLog
 
 
 # Create your views here.
@@ -56,7 +59,17 @@ def settings_view(request):
         )
 
         if form.is_valid():
-            form.save()
+            with transaction.atomic():
+                updated_user = form.save()
+
+                WeightLog.objects.update_or_create(
+                    user=updated_user,
+                    date=timezone.localdate(),
+                    defaults={
+                        'weight': updated_user.current_weight,
+                    },
+                )
+
             messages.success(
                 request,
                 'Your settings have been updated.',

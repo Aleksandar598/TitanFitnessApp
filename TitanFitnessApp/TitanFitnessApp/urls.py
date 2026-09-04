@@ -32,6 +32,7 @@ from users.views import register_view, unregistered_menu_view, login_view, logou
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('workouts/', include('workout.urls')),
+    path('community/', include('community.urls')),
     path('register/', register_view, name='register'),
     path('login/', login_view, name='login'),
     path('', unregistered_menu_view, name='home'),

@@ -1,10 +1,18 @@
 from datetime import date
+from enum import Enum
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
-
+from django.utils import timezone
 
 # Create your models here.
+
+class FitnessGoal(Enum):
+    lose = -250
+    maintain = 0
+    gain = 250
+
 class CustomUserManager(UserManager):
     def create_superuser(self, username, email=None, password=None, **extra_fields):
         email = email or f'{username}@admin.local'
@@ -67,6 +75,86 @@ class CustomUser(AbstractUser):
 
         result_calories = bmr * self.activity_level
         return result_calories + self.fitness_goal
+
+    @property
+    def daily_macronutrient_goals(self):
+        ratios_by_fitness_goal = {
+            FitnessGoal.lose.value: {
+                'carbohydrates': 0.40,
+                'protein': 0.30,
+                'fat': 0.30,
+            },
+            FitnessGoal.maintain.value: {
+                'carbohydrates': 0.50,
+                'protein': 0.20,
+                'fat': 0.30,
+            },
+            FitnessGoal.gain.value: {
+                'carbohydrates': 0.45,
+                'protein': 0.30,
+                'fat': 0.25,
+            },
+        }
+
+        ratios = ratios_by_fitness_goal[self.fitness_goal]
+        calorie_goal = self.daily_calorie_goal
+
+        return {
+            'calories': round(calorie_goal),
+            'protein': round(calorie_goal * ratios['protein'] / 4),
+            'carbohydrates': round(
+                calorie_goal * ratios['carbohydrates'] / 4
+            ),
+            'fat': round(calorie_goal * ratios['fat'] / 9),
+        }
+
+    def daily_macronutrient_goals_with_workout(
+        self,
+        workout_calories_burned,
+    ):
+        base_goals = self.daily_macronutrient_goals
+        workout_calories_burned = workout_calories_burned or 0
+
+        return {
+            'calories': (
+                base_goals['calories']
+                + round(workout_calories_burned)
+            ),
+            'protein': (
+                base_goals['protein']
+                + round(workout_calories_burned * 0.20 / 4)
+            ),
+            'carbohydrates': (
+                base_goals['carbohydrates']
+                + round(workout_calories_burned * 0.60 / 4)
+            ),
+            'fat': (
+                base_goals['fat']
+                + round(workout_calories_burned * 0.20 / 9)
+            ),
+        }
+
+
+class WeightLog(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='weight_logs',
+    )
+    date = models.DateField(default=timezone.localdate)
+    weight = models.IntegerField()
+
+    class Meta:
+        ordering = ('-date',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'date'),
+                name='unique_weight_log_per_user_per_day',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.user} — {self.weight} kg on {self.date}'
 
 
 

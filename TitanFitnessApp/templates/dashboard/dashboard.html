@@ -6,11 +6,74 @@
 </head>
 <body>
 <h1>Welcome to the Dashboard, {{ username }}!</h1>
+
+<h2>Today's nutrition</h2>
+<p>Workout calories burned today: {{ workout_calories_burned }} kcal</p>
+<p>Calories: {{ daily_intake.calories }} / {{ daily_goals.calories }} kcal</p>
+<p>Protein: {{ daily_intake.protein }} / {{ daily_goals.protein }} g</p>
+<p>Carbohydrates: {{ daily_intake.carbohydrates }} / {{ daily_goals.carbohydrates }} g</p>
+<p>Fat: {{ daily_intake.fat }} / {{ daily_goals.fat }} g</p>
+
+<h2>Weight progress</h2>
+
+{% if weight_chart_data.weights %}
+    <div style="position: relative; width: 450px; height: 220px;">
+    <canvas id="weight-chart"></canvas>
+</div>
+
+    {{ weight_chart_data|json_script:"weight-chart-data" }}
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const weightChartData = JSON.parse(
+            document.getElementById('weight-chart-data').textContent
+        );
+
+        new Chart(
+            document.getElementById('weight-chart'),
+            {
+                type: 'line',
+                data: {
+                    labels: weightChartData.labels,
+                    datasets: [{
+                        label: 'Weight (kg)',
+                        data: weightChartData.weights,
+                        borderColor: '#2563eb',
+                        backgroundColor: '#2563eb',
+                        tension: 0.2,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                        title: {
+                            display: true,
+                            text: 'Kilograms',
+                            },
+                        },
+                        x: {
+                            title: {
+                            display: true,
+                            text: 'Date',
+                                },
+                            },
+                        },
+                }
+            },
+        );
+    </script>
+{% else %}
+    <p>No weight history yet. Update your weight in Settings.</p>
+{% endif %}
+
 <form action="{% url 'logout' %}" method="post" style="display: inline;">
     {% csrf_token %}
     <a href="{% url 'nutrition' %}">Nutrition menu</a>
     <a href="{% url 'workout' %}">Workout menu</a>
     <a href="{% url 'settings' %}">Settings</a>
+    <a href="{% url 'community' %}">Community</a>
     <button type="submit" class="btn btn-danger">
         Log Out
     </button>
