@@ -100,3 +100,52 @@ class WorkoutModelsTest(TestCase):
             workout_session=session,
             exercise=self.exercise,
         ).exists())
+
+    def test_starting_a_workout_resumes_existing_active_session(self):
+        existing_session = WorkoutSession.objects.create(user=self.user)
+        self.client.login(username=self.user.username, password='password123')
+
+        response = self.client.post(reverse('start_workout_session'))
+
+        self.assertRedirects(
+            response,
+            reverse('workout_session_detail', args=[existing_session.id]),
+        )
+        self.assertEqual(
+            WorkoutSession.objects.filter(
+                user=self.user,
+                status=WorkoutSession.STATUS_ACTIVE,
+            ).count(),
+            1,
+        )
+
+    def test_user_can_add_a_set_to_a_session_exercise(self):
+        session = WorkoutSession.objects.create(user=self.user)
+        session_exercise = WorkoutSessionExercise.objects.create(
+            workout_session=session,
+            exercise=self.exercise,
+            position=1,
+        )
+        self.client.login(username=self.user.username, password='password123')
+
+        response = self.client.post(
+            reverse('add_set_to_session_exercise', args=[session.id, session_exercise.id]),
+            {'weight': 60, 'repetitions': 8},
+        )
+
+        self.assertRedirects(response, reverse('workout_session_detail', args=[session.id]))
+        workout_set = WorkoutExerciseSet.objects.get(workout_session_exercise=session_exercise)
+        self.assertEqual(workout_set.set_number, 1)
+        self.assertEqual(workout_set.weight, 60)
+        self.assertEqual(workout_set.repetitions, 8)
+
+    def test_user_can_finish_an_active_workout_session(self):
+        session = WorkoutSession.objects.create(user=self.user)
+        self.client.login(username=self.user.username, password='password123')
+
+        response = self.client.post(reverse('finish_workout_session', args=[session.id]))
+
+        self.assertRedirects(response, reverse('workout'))
+        session.refresh_from_db()
+        self.assertEqual(session.status, WorkoutSession.STATUS_COMPLETED)
+        self.assertIsNotNone(session.completed_at)

@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from workout.forms.ExerciseForm import ExerciseForm
+from workout.forms.WorkoutExerciseSetForm import WorkoutExerciseSetForm
 from workout.forms.WorkoutSessionExerciseForm import WorkoutSessionExerciseForm
-from workout.models import Exercise, WorkoutSession, WorkoutSessionExercise
+from workout.models import Exercise, WorkoutSession, WorkoutSessionExercise, WorkoutExerciseSet
 
 
 @login_required
@@ -47,17 +49,25 @@ def create_personal_exercise_view(request):
 @login_required
 @require_POST
 def start_workout_session_view(request):
+    active_session = WorkoutSession.objects.filter(user=request.user, status=WorkoutSession.STATUS_ACTIVE,).first()
+
+    if active_session:
+        return redirect(
+            'workout_session_detail', session_id=active_session.id,)
+
     session = WorkoutSession.objects.create(user=request.user)
-    return redirect('workout_session_detail', session_id=session.id)
+    return redirect('workout_session_detail', session_id=session.id,)
 
 
 @login_required
 def workout_session_detail_view(request, session_id):
     session = get_object_or_404(WorkoutSession, id=session_id, user=request.user)
     form = WorkoutSessionExerciseForm(user=request.user, workout_session=session)
+    set_form = WorkoutExerciseSetForm()
     return render(request, 'workout/workout_session.html', {
         'session': session,
         'form': form,
+        'set_form': set_form,
     })
 
 
@@ -79,3 +89,46 @@ def add_exercise_to_session_view(request, session_id):
         session_exercise.save()
 
     return redirect('workout_session_detail', session_id=session.id)
+
+
+@login_required
+@require_POST
+def add_set_to_session_exercise_view(request, session_id, session_exercise_id):
+    session = get_object_or_404(
+        WorkoutSession,
+        id=session_id,
+        user=request.user,
+        status=WorkoutSession.STATUS_ACTIVE,
+    )
+    session_exercise = get_object_or_404(
+        WorkoutSessionExercise,
+        id=session_exercise_id,
+        workout_session=session,
+    )
+    form = WorkoutExerciseSetForm(request.POST)
+
+    if form.is_valid():
+        next_set_number = (
+            session_exercise.sets.aggregate(Max('set_number'))['set_number__max'] or 0
+        ) + 1
+        workout_set = form.save(commit=False)
+        workout_set.workout_session_exercise = session_exercise
+        workout_set.set_number = next_set_number
+        workout_set.save()
+
+    return redirect('workout_session_detail', session_id=session.id)
+
+
+@login_required
+@require_POST
+def finish_workout_session_view(request, session_id):
+    session = get_object_or_404(
+        WorkoutSession,
+        id=session_id,
+        user=request.user,
+        status=WorkoutSession.STATUS_ACTIVE,
+    )
+    session.status = WorkoutSession.STATUS_COMPLETED
+    session.completed_at = timezone.now()
+    session.save(update_fields=('status', 'completed_at'))
+    return redirect('workout')

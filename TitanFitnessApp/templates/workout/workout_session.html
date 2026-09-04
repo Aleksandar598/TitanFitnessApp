@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Titan - Active Workout</title>
+</head>
+<body>
+    <h1>Active Workout</h1>
+    <p>Started: {{ session.started_at }}</p>
+
+    <h2>Exercises</h2>
+    {% if session.session_exercises.exists %}
+        <ol>
+            {% for session_exercise in session.session_exercises.all %}
+                <li>
+                    <h3>{{ session_exercise.exercise.name }}</h3>
+
+                    {% for workout_set in session_exercise.sets.all %}
+                        <p>
+                            Set {{ workout_set.set_number }}:
+                            {{ workout_set.weight }} kg ×
+                            {{ workout_set.repetitions }} reps
+                        </p>
+                    {% empty %}
+                        <p>No sets added yet.</p>
+                    {% endfor %}
+
+                    {% if session.status == 'active' %}
+                        <form method="post"
+                              action="{% url 'add_set_to_session_exercise' session.id session_exercise.id %}">
+                            {% csrf_token %}
+                            {{ set_form.as_p }}
+                            <button type="submit">Add set</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>No exercises have been added yet.</p>
+    {% endif %}
+
+    {% if session.status == 'active' %}
+        <h2>Add exercise</h2>
+        <form method="post" action="{% url 'add_exercise_to_session' session.id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Add exercise</button>
+        </form>
+
+        <form method="post" action="{% url 'finish_workout_session' session.id %}">
+            {% csrf_token %}
+            <button type="submit">Finish workout</button>
+        </form>
+    {% else %}
+        <p>This workout was completed at {{ session.completed_at }}.</p>
+    {% endif %}
+
+    <p><a href="{% url 'workout' %}">Back to workout menu</a></p>
+</body>
+</html>
