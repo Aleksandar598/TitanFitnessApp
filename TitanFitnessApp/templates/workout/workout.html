@@ -10,16 +10,19 @@
     <p>Calories burned today: {{ calories_burned_today }} kcal</p>
 
     <div>
-        <a href="{% url 'exercise_list' %}">Exercises</a>
+        <a href="{% url 'exercise_list' %}"><button type="button">Exercises</button></a>
     </div>
 
-    <p><a href="{% url 'workout_history' %}">Workout history</a></p>
-    <p><a href="{% url 'workout_plan_list' %}">Workout plans</a></p>
+    <p><a href="{% url 'workout_history' %}"><button type="button">Workout history</button></a></p>
+    <p><a href="{% url 'workout_plan_list' %}"><button type="button">Workout plans</button></a></p>
+    <p><a href="{% url 'personal_records' %}"><button type="button">Personal records</button></a></p>
 
     <div>
         {% if active_session %}
             <a href="{% url 'workout_session_detail' active_session.id %}">
+                <button type="button">
                 Resume workout
+                </button>
             </a>
         {% else %}
             <form method="post" action="{% url 'start_workout_session' %}">
@@ -29,7 +32,7 @@
         {% endif %}
     </div>
 
-    <p><a href="{% url 'dashboard' %}">Back to dashboard</a></p>
+    <p><a href="{% url 'dashboard' %}"><button type="button">Back to dashboard</button></a></p>
 
     <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}

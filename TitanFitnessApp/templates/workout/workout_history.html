@@ -15,7 +15,9 @@
                     — Calories burned: {{ session.calories_burned }} kcal
 
                     <a href="{% url 'workout_session_detail' session.id %}">
+                        <button type="button">
                         View details
+                        </button>
                     </a>
                 </li>
             {% endfor %}
@@ -24,6 +26,6 @@
         <p>You have no completed workouts yet.</p>
     {% endif %}
 
-    <p><a href="{% url 'workout' %}">Back to workouts</a></p>
+    <p><a href="{% url 'workout' %}"><button type="button">Back to workouts</button></a></p>
 </body>
 </html>

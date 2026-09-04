@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Titan - Personal records</title>
+</head>
+<body>
+    <h1>Personal records</h1>
+
+    {% for record in records %}
+        <p>
+            <strong>{{ record.exercise.name }}</strong>:
+            {{ record.weight }} kg ×
+            {{ record.repetitions }} reps
+            — {{ record.achieved_at }}
+        </p>
+    {% empty %}
+        <p>Complete sets to create your first personal record.</p>
+    {% endfor %}
+
+    <p><a href="{% url 'workout' %}"><button type="button">Back to workouts</button></a></p>
+</body>
+</html>

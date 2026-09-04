@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Titan - Community</title>
+</head>
+<body>
+    <h1>Community</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <h2>Create post</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ post_form.as_p }}
+        <button type="submit">Post</button>
+    </form>
+
+    <h2>Recent posts</h2>
+
+    {% for post in posts %}
+        <article>
+            <h3>{{ post.title }}</h3>
+            <p>
+                By {{ post.author.username }}
+                — {{ post.created_at }}
+            </p>
+            <p>{{ post.content }}</p>
+
+            <form method="post"
+                  action="{% url 'toggle_like' post.id %}">
+                {% csrf_token %}
+
+                {% if post.id in liked_post_ids %}
+                    <button type="submit">
+                        Unlike ({{ post.likes.count }})
+                    </button>
+                {% else %}
+                    <button type="submit">
+                        Like ({{ post.likes.count }})
+                    </button>
+                {% endif %}
+            </form>
+
+            <h4>Comments</h4>
+
+            {% for comment in post.comments.all %}
+                <p>
+                    <strong>{{ comment.author.username }}</strong>:
+                    {{ comment.content }}
+                </p>
+            {% empty %}
+                <p>No comments yet.</p>
+            {% endfor %}
+
+            <form method="post"
+                  action="{% url 'create_comment' post.id %}">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <button type="submit">Comment</button>
+            </form>
+        </article>
+    {% empty %}
+        <p>No posts yet.</p>
+    {% endfor %}
+
+    <p><a href="{% url 'dashboard' %}"><button type="button">Back to dashboard</button></a></p>
+</body>
+</html>

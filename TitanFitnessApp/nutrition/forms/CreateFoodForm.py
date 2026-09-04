@@ -54,8 +54,9 @@ class CreateFoodForm(forms.ModelForm):
 
     def save(self, commit=True):
         food = super().save(commit=False)
-        # Calories are derived from the current macro values, including edits.
         food.calories = None
+        if self.user is not None:
+            food.user = self.user
         food.full_clean()
         if commit:
             food.save()

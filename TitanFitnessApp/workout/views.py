@@ -15,6 +15,7 @@ from workout.forms.WorkoutExerciseSetForm import WorkoutExerciseSetForm
 from workout.forms.WorkoutSessionExerciseForm import WorkoutSessionExerciseForm
 from workout.models import (
     Exercise,
+    PersonalExerciseRecord,
     Workout,
     WorkoutExercise,
     WorkoutPlanExerciseSet,
@@ -487,10 +488,62 @@ def complete_workout_set_view(
         is_completed=False,
     )
 
-    workout_set.is_completed = True
-    workout_set.save(update_fields=('is_completed',))
+    with transaction.atomic():
+        workout_set.is_completed = True
+        workout_set.save(update_fields=('is_completed',))
+
+        record, created = PersonalExerciseRecord.objects.get_or_create(
+            user=request.user,
+            exercise=session_exercise.exercise,
+            defaults={
+                'weight': workout_set.weight,
+                'repetitions': workout_set.repetitions,
+                'workout_session': session,
+            },
+        )
+
+        is_better_record = (
+            workout_set.weight > record.weight
+            or (
+                workout_set.weight == record.weight
+                and workout_set.repetitions > record.repetitions
+            )
+        )
+
+        if created or is_better_record:
+            record.weight = workout_set.weight
+            record.repetitions = workout_set.repetitions
+            record.workout_session = session
+            record.achieved_at = timezone.now()
+            record.save()
+
+            messages.success(
+                request,
+                (
+                    'New personal record: '
+                    f'{session_exercise.exercise.name} — '
+                    f'{workout_set.weight} kg × '
+                    f'{workout_set.repetitions} reps!'
+                ),
+            )
 
     return redirect('workout_session_detail', session_id=session.id)
+
+
+@login_required
+def personal_records_view(request):
+    records = PersonalExerciseRecord.objects.filter(
+        user=request.user,
+    ).select_related(
+        'exercise',
+        'workout_session',
+    ).order_by(
+        'exercise__name',
+    )
+
+    return render(request, 'workout/personal_records.html', {
+        'records': records,
+    })
 
 
 @login_required

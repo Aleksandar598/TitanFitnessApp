@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Exercises</h1>
-    <p><a href="{% url 'create_personal_exercise' %}">Create personal exercise</a></p>
+    <p><a href="{% url 'create_personal_exercise' %}"><button type="button">Create personal exercise</button></a></p>
 
     <h2>Available exercises</h2>
     {% if available_exercises %}
@@ -30,6 +30,6 @@
         <p>No exercises are available yet. Create a personal exercise to get started.</p>
     {% endif %}
 
-    <p><a href="{% url 'workout' %}">Back to workouts</a></p>
+    <p><a href="{% url 'workout' %}"><button type="button">Back to workouts</button></a></p>
 </body>
 </html>

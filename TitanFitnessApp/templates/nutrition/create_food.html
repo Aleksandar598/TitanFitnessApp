@@ -26,9 +26,9 @@
     </form>
     <p>
         {% if is_edit %}
-            <a href="{% url 'saved_foods' %}">Cancel</a>
+        <a href="{% url 'saved_foods' %}"><button type="button">Cancel</button></a>
         {% else %}
-            Want to go back? <a href="{% url 'nutrition' %}">Back to menu</a>.
+        Want to go back? <a href="{% url 'nutrition' %}"><button type="button">Back to menu</button></a>.
         {% endif %}
     </p>
 </body>

@@ -182,6 +182,46 @@ class WorkoutSession(models.Model):
 
         self.calories_burned = round((total_volume + ( total_repetitions * body_weight * k )) * 0.014)
 
+
+class PersonalExerciseRecord(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='exercise_records',
+    )
+    exercise = models.ForeignKey(
+        Exercise,
+        on_delete=models.PROTECT,
+        related_name='personal_records',
+    )
+    weight = models.FloatField(
+        validators=[MinValueValidator(0.0)],
+    )
+    repetitions = models.PositiveIntegerField()
+    achieved_at = models.DateTimeField(auto_now_add=True)
+    workout_session = models.ForeignKey(
+        WorkoutSession,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='exercise_records',
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'exercise'),
+                name='unique_personal_record_per_exercise',
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f'{self.user} — {self.exercise}: '
+            f'{self.weight} kg × {self.repetitions}'
+        )
+
+
 class WorkoutSessionExercise(models.Model):
 
     workout_session = models.ForeignKey(
